@@ -1,41 +1,43 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { createRef } from 'react';
 
 import MaskedInput from '../masked-input/masked-input.component';
 import { supportedTypes, btnTypes } from './form.types';
 import './form.style.scss';
 
-const Form = ({ formData, onSubmit }) => {
-	// Creo uno stato in cui sono presenti i valori di tutti i campi del form
-	const [fields, setFields] = useState(createInitialState(formData));
+class Form extends React.PureComponent {
+	constructor(props) {
+		super(props);
 
-	// Riferimento all'elemento confirmPassword, se presente
-	// Utile per la validazione custom nella funzione handleChange
-	const confPassRef = useRef();
+		// Creo uno stato in cui sono presenti i valori di tutti i campi del form
+		this.state = createInitialState(this.props.formData);
+
+		// Riferimento all'elemento confirmPassword, se presente
+		// Utile per la validazione custom nella funzione handleChange
+		this.confPassRef = createRef();
+	}
 
 	// Aggiorna lo stato in base ai valori inseriti nei campi del form
-	const handleChange = event => {
+	handleChange = event => {
 		const { value, files, name } = event.target;
 
 		// Gli input di tipo file conservano i file nel campo files e non
 		//  nel campo value
-		files
-			? setFields({ ...fields, [name]: files })
-			: setFields({ ...fields, [name]: value });
+		files ? this.setState({ [name]: files }) : this.setState({ [name]: value });
 
 		// Validazione del campo confirmPassword, se presente
 		if (name === 'confirmPassword') {
-			if (value !== fields.password) {
-				confPassRef.current.setCustomValidity("Passwords don't match");
+			if (value !== this.state.password) {
+				this.confPassRef.current.setCustomValidity("Passwords don't match");
 			} else {
-				confPassRef.current.setCustomValidity('');
+				this.confPassRef.current.setCustomValidity('');
 			}
 		}
 	};
 
 	// Resetta lo stato alla pressione del pulsante reset, se presente
-	const handleReset = event => {
+	handleReset = event => {
 		event.preventDefault();
-		setFields(createInitialState(formData));
+		this.setState(createInitialState(this.props.formData));
 	};
 
 	/* 
@@ -44,7 +46,7 @@ const Form = ({ formData, onSubmit }) => {
 	#################################
 	*/
 
-	const renderField = ({ id, name, value, mask, options, ...input }) => {
+	renderField = ({ id, name, value, mask, options, ...input }) => {
 		switch (input.type) {
 			// Supporto le maschere per i tipi text e tel
 			case 'text':
@@ -54,8 +56,8 @@ const Form = ({ formData, onSubmit }) => {
 						id={id}
 						name={name}
 						mask={mask}
-						value={fields[name]}
-						onChange={handleChange}
+						value={this.state[name]}
+						onChange={this.handleChange}
 						{...input}
 					/>
 				);
@@ -75,8 +77,8 @@ const Form = ({ formData, onSubmit }) => {
 									name={name}
 									id={`${name}-${option}`}
 									value={option}
-									checked={fields[name] === option}
-									onChange={handleChange}
+									checked={this.state[name] === option}
+									onChange={this.handleChange}
 									{...input}
 								/>
 							</React.Fragment>
@@ -90,8 +92,8 @@ const Form = ({ formData, onSubmit }) => {
 					<select
 						id={id}
 						name={name}
-						value={fields[name]}
-						onChange={handleChange}
+						value={this.state[name]}
+						onChange={this.handleChange}
 						{...input}>
 						{options.map((option, indx) => (
 							<option key={indx} value={option}>
@@ -107,8 +109,8 @@ const Form = ({ formData, onSubmit }) => {
 					<textarea
 						id={id}
 						name={name}
-						value={fields[name]}
-						onChange={handleChange}
+						value={this.state[name]}
+						onChange={this.handleChange}
 						{...input}
 					/>
 				);
@@ -130,9 +132,9 @@ const Form = ({ formData, onSubmit }) => {
 					<input
 						id={id}
 						name={name}
-						value={input.type !== 'file' ? fields[name] : undefined}
-						ref={name === 'confirmPassword' ? confPassRef : null}
-						onChange={handleChange}
+						value={input.type !== 'file' ? this.state[name] : undefined}
+						ref={name === 'confirmPassword' ? this.confPassRef : null}
+						onChange={this.handleChange}
 						{...input}
 					/>
 				);
@@ -145,9 +147,11 @@ const Form = ({ formData, onSubmit }) => {
 	############################
 	*/
 
-	const formButtons = useMemo(() => {
+	formButtons = () => {
 		// Costruisco un array con tutti i pulsanti presenti in formData
-		const btns = formData.filter(input => btnTypes.includes(input.type));
+		const btns = this.props.formData.filter(input =>
+			btnTypes.includes(input.type)
+		);
 
 		// Genero il JSX in base all'array
 		// Tutti i pulsanti sono posizionati all'interno di un div, in modo da
@@ -169,30 +173,31 @@ const Form = ({ formData, onSubmit }) => {
 				))}
 			</div>
 		);
-	}, [formData]);
+	};
 
 	/*
 	#############################
 		RETURN DEL COMPONENTE
 	#############################
 	*/
-
-	return (
-		<form
-			className='form'
-			onSubmit={e => onSubmit(e, fields)}
-			onReset={handleReset}>
-			{formData.map(({ label, errMsg, ...input }) => (
-				<React.Fragment key={input.id}>
-					{label && <label htmlFor={input.id}>{label}</label>}
-					{renderField(input)}
-					{errMsg && <p className='err-msg'>{errMsg}</p>}
-				</React.Fragment>
-			))}
-			{formButtons}
-		</form>
-	);
-};
+	render() {
+		return (
+			<form
+				className='form'
+				onSubmit={e => this.props.onSubmit(e, this.state)}
+				onReset={this.handleReset}>
+				{this.props.formData.map(({ label, errMsg, ...input }) => (
+					<React.Fragment key={input.id}>
+						{label && <label htmlFor={input.id}>{label}</label>}
+						{this.renderField(input)}
+						{errMsg && <p className='err-msg'>{errMsg}</p>}
+					</React.Fragment>
+				))}
+				{this.formButtons()}
+			</form>
+		);
+	}
+}
 
 export default Form;
 

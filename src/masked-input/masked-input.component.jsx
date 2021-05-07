@@ -1,12 +1,10 @@
 import React from 'react';
 
-class MaskedInput extends React.Component {
-	shouldComponentUpdate(newProps) {
-		return this.props.value !== newProps.value;
-	}
-
+class MaskedInput extends React.PureComponent {
 	handleChange = event => {
 		const value = event.target.value;
+
+		// Pulisco il contenuto del campo, eliminando la maschera
 		const unmasked = unMaskValue(value, this.props.mask);
 
 		// Muto l'oggetto event, inserendo il valore senza maschera nel
@@ -18,6 +16,9 @@ class MaskedInput extends React.Component {
 
 	render() {
 		const { value, mask, onChange, ...htmlProps } = this.props;
+
+		// Aplico la maschera al valore inserito dall'utente prima di
+		//  inserirlo nel campo.
 		const masked = maskValue(value, mask);
 
 		return <input value={masked} onChange={this.handleChange} {...htmlProps} />;
@@ -25,6 +26,12 @@ class MaskedInput extends React.Component {
 }
 
 export default MaskedInput;
+
+/*
+###############################
+		UTILITIES
+###############################
+*/
 
 const maskValue = (value, mask) => {
 	if (!mask) return value;
