@@ -1,6 +1,26 @@
 import React from 'react';
 
-class MaskedInput extends React.PureComponent {
+class MaskedInput extends React.Component {
+	shouldComponentUpdate(newProps) {
+		if (this.props.label !== newProps.label) return true;
+		if (this.props.errMsg !== newProps.errMsg) return true;
+		if (this.props.mask !== newProps.mask) return true;
+		if (this.props.value !== newProps.value) return true;
+		if (this.props.onChange !== newProps.onChange) return true;
+
+		for (var key in newProps.htmlProps) {
+			if (!(key in this.props.htmlProps)) {
+				return true;
+			}
+
+			if (newProps.htmlProps[key] !== this.props.htmlProps[key]) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	handleChange = event => {
 		const value = event.target.value;
 
@@ -15,13 +35,20 @@ class MaskedInput extends React.PureComponent {
 	};
 
 	render() {
-		const { value, mask, onChange, ...htmlProps } = this.props;
+		const { label, errMsg, mask, value, htmlProps } = this.props;
+		const { id, type } = htmlProps;
 
 		// Aplico la maschera al valore inserito dall'utente prima di
 		//  inserirlo nel campo.
 		const masked = maskValue(value, mask);
 
-		return <input value={masked} onChange={this.handleChange} {...htmlProps} />;
+		return type === 'text' || type === 'tel' ? (
+			<section className='input-group' key={id}>
+				{label && <label htmlFor={id}>{label}</label>}
+				<input value={masked} onChange={this.handleChange} {...htmlProps} />
+				{errMsg && <p className='err-msg'>{errMsg}</p>}
+			</section>
+		) : null;
 	}
 }
 

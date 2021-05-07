@@ -1,70 +1,83 @@
 .form {
+	//display: grid;
+	//grid-template-columns: 1fr 1fr;
+	//column-gap: 20px;
+
 	display: flex;
 	flex-direction: column;
 }
 
-.form > label {
-	margin-top: 30px;
-	margin-bottom: 10px;
-	text-align: left;
-	font-size: 1.15rem;
-	font-weight: 500;
-}
-
-.form input:not(.radio-check, .inp-btn),
-.form select {
-	border: none;
-	border-bottom: 1px solid grey;
-	padding: 5px;
-	font-size: 1rem;
-
-	&:focus {
-		outline: none;
-		border-bottom: 3px solid black;
-	}
-
-	// Seleziono tutti gli err-msg che seguono direttamente un tag input che
-	//  sia contemporaneamente non vuoto e invalido
-	&:not([value='']):invalid + .err-msg {
-		display: block;
-	}
-}
-
-.form .radio-check-container {
+.form .input-group {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+	flex-direction: column;
 
 	& > label {
-		margin: 0 10px 0 20px;
+		margin-top: 30px;
+		margin-bottom: 10px;
+		text-align: left;
+		font-size: 1.15rem;
+		font-weight: 500;
+	}
+
+	input:not(.radio-check, .inp-btn),
+	select {
+		border: none;
+		border-bottom: 1px solid grey;
+		padding: 5px;
 		font-size: 1rem;
+
+		&:focus {
+			outline: none;
+			border-bottom: 3px solid black;
+		}
+
+		// Seleziono tutti gli err-msg che seguono direttamente un tag input che
+		//  sia contemporaneamente non vuoto e invalido
+		&:not([value='']):invalid + .err-msg {
+			display: block;
+		}
 	}
-}
 
-.form textarea {
-	padding: 15px;
-	font-family: unset;
-	font-size: 1rem;
-	resize: none; // rimuove la maniglia per il resizing
+	.radio-check-container {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
 
-	&:focus {
-		border: 3px solid black;
+		& > label {
+			margin: 0 10px 0 20px;
+			font-size: 1rem;
+			font-weight: normal;
+		}
 	}
-}
 
-.form .err-msg {
-	margin-top: 10px;
+	textarea {
+		padding: 15px;
+		font-family: unset;
+		font-size: 1rem;
+		resize: none; // rimuove la maniglia per il resizing
 
-	white-space: pre-line;
-	text-align: left;
-	color: red;
+		&:focus {
+			border: 3px solid black;
+		}
+	}
 
-	display: none;
+	.err-msg {
+		margin-top: 10px;
+
+		white-space: pre-line;
+		text-align: left;
+		color: red;
+
+		display: none;
+	}
 }
 
 .form .btns-container {
 	margin-top: 40px;
 	min-height: 60px;
+
+	//grid-column: 1 / span 2;
+
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;

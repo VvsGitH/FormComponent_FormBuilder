@@ -1,5 +1,6 @@
-import React, { createRef } from 'react';
+import React from 'react';
 
+import Input from '../input/input.component';
 import MaskedInput from '../masked-input/masked-input.component';
 import { supportedTypes, btnTypes } from './form.types';
 import './form.style.scss';
@@ -11,13 +12,25 @@ class Form extends React.PureComponent {
 		// Creo uno stato in cui sono presenti i valori di tutti i campi del form
 		this.state = createInitialState(this.props.formData);
 
-		// Riferimento all'elemento confirmPassword, se presente
-		// Utile per la validazione custom nella funzione handleChange
-		this.confPassRef = createRef();
+		// Array con tutti i campi supportati in formData
+		this.fields = this.props.formData.filter(field =>
+			supportedTypes.includes(field.type)
+		);
+
+		// Array con tutti i pulsanti presenti in formData
+		this.btns = this.props.formData.filter(input =>
+			btnTypes.includes(input.type)
+		);
+
+		// Array con tutti i campi non supportati in formData
+		this.unsupportedFields = this.props.formData.filter(
+			field =>
+				!supportedTypes.includes(field.type) && !btnTypes.includes(field.type)
+		);
 	}
 
 	// Aggiorna lo stato in base ai valori inseriti nei campi del form
-	handleChange = event => {
+	handleChange = (event, fieldRef = null) => {
 		const { value, files, name } = event.target;
 
 		// Gli input di tipo file conservano i file nel campo files e non
@@ -27,9 +40,9 @@ class Form extends React.PureComponent {
 		// Validazione del campo confirmPassword, se presente
 		if (name === 'confirmPassword') {
 			if (value !== this.state.password) {
-				this.confPassRef.current.setCustomValidity("Passwords don't match");
+				fieldRef.current.setCustomValidity("Passwords don't match");
 			} else {
-				this.confPassRef.current.setCustomValidity('');
+				fieldRef.current.setCustomValidity('');
 			}
 		}
 	};
@@ -40,107 +53,6 @@ class Form extends React.PureComponent {
 		this.setState(createInitialState(this.props.formData));
 	};
 
-	/* 
-	#################################
-		RENDER DEI CAMPI DEL FORM
-	#################################
-	*/
-
-	renderField = ({ id, name, value, mask, options, ...input }) => {
-		switch (input.type) {
-			// Supporto le maschere per i tipi text e tel
-			case 'text':
-			case 'tel':
-				return (
-					<MaskedInput
-						id={id}
-						name={name}
-						mask={mask}
-						value={this.state[name]}
-						onChange={this.handleChange}
-						{...input}
-					/>
-				);
-			// I tipi radio e checkbox comprendono varie opzioni e richiedono
-			//  un trattamento particolare
-			case 'radio':
-			case 'checkbox':
-				return (
-					<div className='radio-check-container'>
-						{options.map((option, indx) => (
-							<React.Fragment key={indx}>
-								<label htmlFor={`${name}-${option}`}>
-									{option.charAt(0).toUpperCase() + option.slice(1) + ':'}
-								</label>
-								<input
-									className='radio-check'
-									name={name}
-									id={`${name}-${option}`}
-									value={option}
-									checked={this.state[name] === option}
-									onChange={this.handleChange}
-									{...input}
-								/>
-							</React.Fragment>
-						))}
-					</div>
-				);
-			// Il tag select deve essere costruito con all'interno i suoi
-			//  vari tag option
-			case 'select':
-				return (
-					<select
-						id={id}
-						name={name}
-						value={this.state[name]}
-						onChange={this.handleChange}
-						{...input}>
-						{options.map((option, indx) => (
-							<option key={indx} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
-				);
-			// Il tipo textarea richiede un trattamento speciale in quanto non
-			//  è un tag <input> ma un tag <textarea>
-			case 'textarea':
-				return (
-					<textarea
-						id={id}
-						name={name}
-						value={this.state[name]}
-						onChange={this.handleChange}
-						{...input}
-					/>
-				);
-			default:
-				// Non renderizzo i pulsanti ed i tipi non supportati
-				// Il render dei pulsanti è gestito da renderBtns()
-				if (!supportedTypes.includes(input.type)) {
-					!btnTypes.includes(input.type) &&
-						console.warn(
-							'Incompatible type was discarded by the form: ',
-							input.type
-						);
-					return null;
-				}
-				// NOTA1: confirmPassword necessita di un ref per la validaz.
-				// NOTA2: il tipo file è un componente incontrollato e
-				//  necessita un campo value pari ad undefined
-				return (
-					<input
-						id={id}
-						name={name}
-						value={input.type !== 'file' ? this.state[name] : undefined}
-						ref={name === 'confirmPassword' ? this.confPassRef : null}
-						onChange={this.handleChange}
-						{...input}
-					/>
-				);
-		}
-	};
-
 	/*
 	############################
 		RENDER DEI PULSANTI
@@ -148,12 +60,7 @@ class Form extends React.PureComponent {
 	*/
 
 	formButtons = () => {
-		// Costruisco un array con tutti i pulsanti presenti in formData
-		const btns = this.props.formData.filter(input =>
-			btnTypes.includes(input.type)
-		);
-
-		// Genero il JSX in base all'array
+		// Genero il JSX in base all'array btns
 		// Tutti i pulsanti sono posizionati all'interno di un div, in modo da
 		//  poterne gestire separatamente la posizione nel css
 		// I pulsanti di tipo 'button' devono includere una funzione onClick
@@ -162,7 +69,7 @@ class Form extends React.PureComponent {
 		//  onClick in quanto triggerano in automatico i rispettivi eventi
 		return (
 			<div className='btns-container'>
-				{btns.map(btn => (
+				{this.btns.map(btn => (
 					<input
 						className='inp-btn'
 						key={btn.id}
@@ -177,22 +84,44 @@ class Form extends React.PureComponent {
 
 	/*
 	#############################
-		RETURN DEL COMPONENTE
+		RENDER DEL COMPONENTE
 	#############################
 	*/
+
 	render() {
+		this.unsupportedFields.length !== 0 &&
+			console.warn(
+				'Incompatible types were discarded by the form: ',
+				this.unsupportedFields
+			);
+
 		return (
 			<form
 				className='form'
 				onSubmit={e => this.props.onSubmit(e, this.state)}
 				onReset={this.handleReset}>
-				{this.props.formData.map(({ label, errMsg, ...input }) => (
-					<React.Fragment key={input.id}>
-						{label && <label htmlFor={input.id}>{label}</label>}
-						{this.renderField(input)}
-						{errMsg && <p className='err-msg'>{errMsg}</p>}
-					</React.Fragment>
-				))}
+				{this.fields.map(({ label, errMsg, mask, ...htmlProps }) =>
+					mask ? (
+						<MaskedInput
+							key={htmlProps.id}
+							label={label}
+							errMsg={errMsg}
+							mask={mask}
+							value={this.state[htmlProps.name]}
+							htmlProps={htmlProps}
+							onChange={this.handleChange}
+						/>
+					) : (
+						<Input
+							key={htmlProps.id}
+							label={label}
+							errMsg={errMsg}
+							value={this.state[htmlProps.name]}
+							htmlProps={htmlProps}
+							onChange={this.handleChange}
+						/>
+					)
+				)}
 				{this.formButtons()}
 			</form>
 		);
