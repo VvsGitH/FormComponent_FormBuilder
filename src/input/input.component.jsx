@@ -1,36 +1,20 @@
 import React, { createRef } from 'react';
+import { maskValue, unMaskValue } from './input.utils';
 
-class Input extends React.Component {
+class Input extends React.PureComponent {
 	constructor(props) {
 		super(props);
 
 		this.fieldRef = createRef();
 	}
 
-	shouldComponentUpdate(newProps) {
-		if (this.props.label !== newProps.label) return true;
-		if (this.props.errMsg !== newProps.errMsg) return true;
-		if (this.props.value !== newProps.value) return true;
-		if (this.props.onChange !== newProps.onChange) return true;
+	//
+	// Renderizzo il campo di input in base al tipo contenuto nei props
+	//
 
-		for (var key in newProps.htmlProps) {
-			if (!(key in this.props.htmlProps)) {
-				return true;
-			}
+	renderField = (fieldValue, onChange, htmlProps) => {
+		const { id, name, options, ...input } = htmlProps;
 
-			if (newProps.htmlProps[key] !== this.props.htmlProps[key]) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	renderField = (
-		fieldValue,
-		onChange,
-		{ id, name, value, options, mask, ...input }
-	) => {
 		switch (input.type) {
 			// I tipi radio e checkbox comprendono varie opzioni e richiedono
 			//  un trattamento particolare
@@ -102,14 +86,42 @@ class Input extends React.Component {
 		}
 	};
 
+	//
+	// Rimuovo la maschera prima di passare il contenuto del campo al
+	//  componente padre.
+	//
+
+	handleMaskedField = (event, fieldRef = null) => {
+		const value = event.target.value;
+
+		// Pulisco il contenuto del campo, eliminando la maschera
+		const unmasked = unMaskValue(value, this.props.mask);
+
+		// Muto l'oggetto event, inserendo il valore senza maschera nel
+		//  campo value. In questo modo il componente padre, aggiungerà nello
+		//  stato l'input raw dell'utente.
+		event.target.value = unmasked;
+		this.props.onChange(event, fieldRef);
+	};
+
+	//
+	// RENDERING DEL COMPONENTE
+	//
+
 	render() {
-		const { label, errMsg, value, htmlProps, onChange } = this.props;
-		const id = htmlProps.id;
+		const { label, errMsg, mask, value, onChange, ...htmlProps } = this.props;
+		const id = this.props.id;
+
+		// Aplico la maschera al valore inserito dall'utente prima di
+		//  inserirlo nel campo.
+		const masked = maskValue(value, mask);
 
 		return (
 			<section className='input-group' key={id}>
 				{label && <label htmlFor={id}>{label}</label>}
-				{this.renderField(value, onChange, htmlProps)}
+				{mask
+					? this.renderField(masked, this.handleMaskedField, htmlProps)
+					: this.renderField(value, onChange, htmlProps)}
 				{errMsg && <p className='err-msg'>{errMsg}</p>}
 			</section>
 		);
