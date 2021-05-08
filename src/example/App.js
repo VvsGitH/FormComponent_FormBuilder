@@ -2,8 +2,8 @@ import React, { useCallback, useState } from 'react';
 
 import './App.scss';
 
-import Form from '../form/form.component';
-import { stringifyAndHash } from '../form/form.utils';
+import Form from '../components/form/form.component';
+import { stringifyAndHash } from '../components/form/form.utils';
 
 import myForm from './form.data';
 const FORM_KEY = stringifyAndHash(myForm);
