@@ -45,9 +45,14 @@ export const createInitialState = fieldsData =>
 		return acc;
 	}, {});
 
-//
-//
-//
+// Eseguo la shallow comparison tra due formData
+// Questa funzione è da utilizzare nel metodo shouldComponentUpdate del
+//  componente Form, nel caso si scelga un approccio in cui Form varia il suo
+//  stato la variare del prop formData.
+// Al momento questa funzione non è utilizzata in quanto è stato scelto un
+//  altro approccio: il componente Form è un componente completamente
+//  incontrollato, la cui chiave è uguale alla versione stringa di formData.
+// Al variare di formData, l'intero componente viene automaticamente resettato.
 
 export const shallowCompareFormData = (oldFormData, newFormData) => {
 	// Confronto la reference
@@ -78,4 +83,25 @@ export const shallowCompareFormData = (oldFormData, newFormData) => {
 		}
 	}
 	return false;
+};
+
+// Semplice funzione di hashing che ricava un hash univoco a 32 bit a partire
+//  da un oggetto qualsiasi.
+// Utile da importare nell'oggetto padre al fine di creare una chiave per il
+//  form che dipende univocamente da formData. Se il formData cambia, la
+//  chiave cambia ed il form viene completamente resettato.
+
+export const stringifyAndHash = obj => {
+	// Convert obj to string
+	const str = JSON.stringify(obj);
+
+	// Convert str to 32bit hash
+	let hash = 0;
+	if (str.length === 0) return hash;
+	for (let i = 0; i < str.length; i++) {
+		let char = str.charCodeAt(i);
+		hash = (hash << 5) - hash + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return hash;
 };

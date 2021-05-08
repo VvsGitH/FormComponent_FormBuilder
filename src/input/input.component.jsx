@@ -1,4 +1,6 @@
 import React, { createRef } from 'react';
+import PropTypes from 'prop-types';
+
 import { maskValue, unMaskValue } from './input.utils';
 
 class Input extends React.PureComponent {
@@ -78,7 +80,7 @@ class Input extends React.PureComponent {
 						id={id}
 						name={name}
 						value={input.type !== 'file' ? fieldValue : undefined}
-						ref={name === 'confirmPassword' ? this.fieldRef : null}
+						ref={this.fieldRef}
 						onChange={event => onChange(event, this.fieldRef)}
 						{...input}
 					/>
@@ -109,23 +111,57 @@ class Input extends React.PureComponent {
 	//
 
 	render() {
-		const { label, errMsg, mask, value, onChange, ...htmlProps } = this.props;
-		const id = this.props.id;
+		const {
+			label,
+			errMsg,
+			id,
+			mask,
+			fieldValue,
+			onChange,
+			...htmlProps
+		} = this.props;
 
 		// Aplico la maschera al valore inserito dall'utente prima di
 		//  inserirlo nel campo.
-		const masked = maskValue(value, mask);
+		const masked = maskValue(fieldValue, mask);
 
 		return (
 			<section className='input-group' key={id}>
 				{label && <label htmlFor={id}>{label}</label>}
 				{mask
 					? this.renderField(masked, this.handleMaskedField, htmlProps)
-					: this.renderField(value, onChange, htmlProps)}
+					: this.renderField(fieldValue, onChange, htmlProps)}
 				{errMsg && <p className='err-msg'>{errMsg}</p>}
 			</section>
 		);
 	}
 }
+
+Input.propTypes = {
+	// Tipo, id e nome del tag html che deve essere generato
+	type: PropTypes.string.isRequired,
+	id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+
+	// Maschera da applicare all'input dell'utente
+	// Il carattere # sarà sostituito con l'input utente
+	mask: PropTypes.string,
+
+	// Valore contenuto all'interno del campo. Deve corrispondere ad una
+	//  parte dello stato del padre, altrimenti il componente diventa
+	//  incontrollato
+	fieldValue: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+		.isRequired,
+
+	// Callback da passare all'evento onChange dell'elemento.
+	// Deve avere due parametri: l'evento e il ref dell'elemento, posto a
+	//  null di default.
+	onChange: PropTypes.func.isRequired,
+
+	// Contenuto dell'elemento html <label> che verrà creato sopra l'input
+	label: PropTypes.string,
+	// Messaggio di errore che apparirà in caso di conenuto invalido
+	errMsg: PropTypes.string,
+};
 
 export default Input;

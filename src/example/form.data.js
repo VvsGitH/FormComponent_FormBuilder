@@ -118,7 +118,9 @@ const myForm = [
 		name: 'curriculum',
 		id: 'curriculum',
 		label: 'Curriculum Vitae',
-		accept: '.pdf, .doc, .docx',
+		accept:
+			'.pdf, .doc, .docx, .odt, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.oasis.opendocument.text',
+		errMsg: 'The file format is invalid',
 	},
 
 	// TEXTAREA - ADDITIONAL INFO
