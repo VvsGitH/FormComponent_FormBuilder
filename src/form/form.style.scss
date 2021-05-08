@@ -1,104 +1,22 @@
 .form {
+	max-width: 1000px;
+	margin: 0 auto;
+
 	//display: grid;
 	//grid-template-columns: 1fr 1fr;
 	//column-gap: 20px;
 
 	display: flex;
 	flex-direction: column;
-}
 
-.form .input-group {
-	display: flex;
-	flex-direction: column;
+	.btns-container {
+		margin-top: 40px;
+		min-height: 60px;
 
-	& > label {
-		margin-top: 30px;
-		margin-bottom: 10px;
-		text-align: left;
-		font-size: 1.15rem;
-		font-weight: 500;
-	}
+		//grid-column: 1 / span 2;
 
-	input:not(.radio-check, .inp-btn),
-	select {
-		border: none;
-		border-bottom: 1px solid grey;
-		padding: 5px;
-		font-size: 1rem;
-
-		&:focus {
-			outline: none;
-			border-bottom: 3px solid black;
-		}
-
-		// Seleziono tutti gli err-msg che seguono direttamente un tag input che
-		//  sia contemporaneamente non vuoto e invalido
-		&:not([value='']):invalid + .err-msg {
-			display: block;
-		}
-	}
-
-	.radio-check-container {
 		display: flex;
-		flex-wrap: wrap;
+		justify-content: flex-end;
 		align-items: center;
-
-		& > label {
-			margin: 0 10px 0 20px;
-			font-size: 1rem;
-			font-weight: normal;
-		}
-	}
-
-	textarea {
-		padding: 15px;
-		font-family: unset;
-		font-size: 1rem;
-		resize: none; // rimuove la maniglia per il resizing
-
-		&:focus {
-			border: 3px solid black;
-		}
-	}
-
-	.err-msg {
-		margin-top: 10px;
-
-		white-space: pre-line;
-		text-align: left;
-		color: red;
-
-		display: none;
-	}
-}
-
-.form .btns-container {
-	margin-top: 40px;
-	min-height: 60px;
-
-	//grid-column: 1 / span 2;
-
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-
-	.inp-btn {
-		margin-left: 30px;
-		min-width: 150px;
-		padding: 15px 0;
-
-		background-color: white;
-		border: 1px solid grey;
-
-		font-size: 1rem;
-		font-weight: 500;
-		letter-spacing: 0.1rem;
-
-		&:hover,
-		&:focus {
-			outline: none;
-			border: 3px solid black;
-			font-weight: bold;
-		}
 	}
 }

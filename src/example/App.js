@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import './App.scss';
 
@@ -18,24 +18,25 @@ function App() {
 	//  al form. La funzione, riceve anche i valori contenuti in tutti i
 	//  campi del form.
 
-	const handleSubmit = fields => {
+	const handleSubmit = useCallback(fields => {
 		console.log('FORM SUBMITTED');
 		console.log(fields);
-	};
+	}, []);
 
 	// Il form richiede come prop un array di oggetti - myForm - contenente
 	//  le caratteristiche degli elementi da inserire del form.
 
 	return (
-		<div className='App'>
+		<>
 			<h1>MY CUSTOM FORM</h1>
 
-			<Form key={FORM_KEY} formData={myForm} onSubmit={handleSubmit} />
+			<div className='ri-render-test'>
+				<p>Click this button to re-render the App component</p>
+				<button onClick={() => setTestState(!testState)}>RI-RENDER APP</button>
+			</div>
 
-			<br />
-			<p>Click this button to re-render the App component</p>
-			<button onClick={() => setTestState(!testState)}>RI-RENDER APP</button>
-		</div>
+			<Form key={FORM_KEY} formData={myForm} onSubmit={handleSubmit} />
+		</>
 	);
 }
 

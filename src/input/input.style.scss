@@ -1,0 +1,90 @@
+.input-group {
+	display: flex;
+	flex-direction: column;
+
+	& > label {
+		margin-top: 30px;
+		margin-bottom: 10px;
+		text-align: left;
+		font-size: 1.15rem;
+		font-weight: 500;
+	}
+
+	// Faccio rientrare di 10px tutti gli elementi sotto al label principale
+	& > *:not(label) {
+		margin-left: 10px;
+	}
+
+	input:not(.radio-check, .inp-btn),
+	select {
+		border: none;
+		border-bottom: 1px solid grey;
+		padding: 5px;
+		font-size: 1rem;
+
+		&:focus {
+			outline: none;
+			border-bottom: 3px solid black;
+		}
+
+		// Seleziono tutti gli err-msg che seguono direttamente un tag input
+		//  che sia contemporaneamente non vuoto e invalido
+		&:not([value='']):invalid + .err-msg {
+			display: block;
+		}
+	}
+
+	// Il campo value dei campi file ha un funzionamento strano. Mi limito
+	//  a verificare se è invalido oppure no.
+	// Lo stato invalid è gestito in JS.
+	input[type='file']:invalid + .err-msg {
+		display: block;
+	}
+
+	textarea {
+		padding: 15px;
+		font-family: unset;
+		font-size: 1rem;
+		resize: none; // rimuove la maniglia per il resizing
+
+		&:focus {
+			border: 3px solid black;
+		}
+	}
+
+	.radio-container {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 20px;
+
+		& > label {
+			margin-right: -10px;
+			font-size: 1rem;
+			font-weight: normal;
+		}
+	}
+
+	.check-container {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.info-msg {
+		font-style: italic;
+		font-size: 0.9rem;
+		margin-top: -5px;
+		margin-bottom: 5px;
+	}
+
+	.err-msg {
+		margin-top: 10px;
+
+		white-space: pre-line;
+		text-align: left;
+		color: red;
+
+		display: none;
+	}
+}

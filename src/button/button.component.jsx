@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './button.style.scss';
 
 // I pulsanti di tipo 'button' devono includere una funzione onClick custom.
 // I pulsanti di tipo 'submit' e 'reset' non richiedono una funzione onClick

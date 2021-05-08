@@ -15,6 +15,7 @@ class Form extends React.PureComponent {
 		// fields -> elmenti di input supportati
 		// btns -> pulsanti (submit, reset, button)
 		// unsupported -> elmenti di input non supportati o sconosciuti
+
 		[this.fields, this.btns, this.unsupported] = calculateFieldsArrays(
 			props.formData
 		);
@@ -37,35 +38,68 @@ class Form extends React.PureComponent {
 
 		this.state = createInitialState(this.fields);
 
-		// Oggetto pensato per raccogliere i refs dei campi file presenti
-		//  nel form. Tali refs servono per validazione e reset.
+		// Dizionario che contiene i refs a tutti i campi del form.
+		// Permette di interagire imperativamente con gli elmenti nel DOM.
+		// Indispensabile per i campi di tipo file e per alcune validazioni.
 
-		this.fileFieldsRefs = {};
+		this.fieldsRefs = {};
+		for (let i = 0; i < this.fields.length; i++) {
+			this.fieldsRefs[this.fields[i].name] = {
+				type: this.fields[i].type,
+				ref: React.createRef(),
+			};
+		}
 	}
 
 	//
 	// Aggiorna lo stato in base ai valori inseriti nei campi del form
 	//
 
-	handleChange = (event, fieldRef = null) => {
+	handleChange = event => {
 		const { value, files, name, type } = event.target;
 
-		// Gli input di tipo file conservano i file nel campo files e non
-		//  nel campo value
-		files ? this.setState({ [name]: files }) : this.setState({ [name]: value });
-
-		// Inserisco i ref dei campi di tipo file, se presenti, all'interno del
-		//  l'oggetto fileFieldsRefs. Necessario per il reset.
-		if (type === 'file' && fieldRef) {
-			this.fileFieldsRefs[name] = fieldRef;
+		// Vario lo stato in base in base al tipo di campo che è variato
+		// Il tipo file contiene il/i file nel campo files e non value
+		// Il tipo checkbox è un boolean
+		// Per tutti gli altri va bene il campo value
+		if (type === 'file') {
+			this.setState({ [name]: files });
+		} else if (type === 'checkbox') {
+			this.setState({ [name]: !this.state[name] });
+		} else {
+			this.setState({ [name]: value });
 		}
 
 		// Validazione del campo confirmPassword, se presente
-		if (name === 'confirmPassword' && fieldRef) {
+		if (name === 'confirmPassword') {
 			if (value !== this.state.password) {
-				fieldRef.current.setCustomValidity("Passwords don't match");
+				this.fieldsRefs[name].ref.current.setCustomValidity(
+					"Passwords don't match"
+				);
 			} else {
-				fieldRef.current.setCustomValidity('');
+				this.fieldsRefs[name].ref.current.setCustomValidity('');
+			}
+		}
+
+		// Validazione dei campi di tipo file
+		// Solo se l'elemento html specifica l'attributo accept
+		if (type === 'file' && event.target.accept) {
+			this.fieldsRefs[name].ref.current.setCustomValidity('');
+			if (event.target.value) {
+				// Estraggo l'estensione del file dal campo value
+				let extIndx = event.target.value.lastIndexOf('.');
+				let extension = event.target.value.slice(extIndx);
+
+				// Estraggo l'array delle estensioni valide dall'attributo
+				//  accept dell'elemento html
+				const validExtensions = event.target.accept.split(', ');
+
+				// Verifico che l'estensione del file sia nell'array
+				if (!validExtensions.includes(extension)) {
+					this.fieldsRefs[name].ref.current.setCustomValidity(
+						'File format not supported'
+					);
+				}
 			}
 		}
 	};
@@ -81,13 +115,16 @@ class Form extends React.PureComponent {
 		// Resetto manualmente l'attributo value dei campi file utilizzando
 		//  i loro refs. Essendo campi non controllati, la variazione dello
 		//  stato non influisce sul loro contenuto.
-		for (let key in this.fileFieldsRefs) {
-			this.fileFieldsRefs[key].current.value = null;
+		for (let key in this.fieldsRefs) {
+			if (this.fieldsRefs[key].type === 'file') {
+				this.fieldsRefs[key].ref.current.value = null;
+				this.fieldsRefs[key].ref.current.setCustomValidity('');
+			}
 		}
 	};
 
 	//
-	// Gestisce il submit
+	// Passa la gestione del submit al componente padre
 	//
 
 	handleSubmit = event => {
@@ -95,6 +132,9 @@ class Form extends React.PureComponent {
 
 		// Invia i campi alla funzione onChange del padre
 		this.props.onSubmit(this.state);
+
+		// Cancella il form
+		this.handleReset(event);
 	};
 
 	//
@@ -113,15 +153,13 @@ class Form extends React.PureComponent {
 				className='form'
 				onSubmit={this.handleSubmit}
 				onReset={this.handleReset}>
-				{this.fields.map(({ label, errMsg, mask, ...htmlProps }) => (
+				{this.fields.map(field => (
 					<Input
-						key={htmlProps.id}
-						label={label}
-						errMsg={errMsg}
-						mask={mask}
-						fieldValue={this.state[htmlProps.name]}
+						key={field.id}
+						fieldValue={this.state[field.name]}
+						innerRef={this.fieldsRefs[field.name].ref}
 						onChange={this.handleChange}
-						{...htmlProps}
+						{...field}
 					/>
 				))}
 

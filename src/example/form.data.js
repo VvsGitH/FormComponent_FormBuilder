@@ -10,7 +10,7 @@ const myForm = [
 		errMsg: 'Only letters allowed',
 	},
 
-	// GENDER RADIO/CHECKBOX
+	// GENDER RADIO SELECTORS
 	{
 		type: 'radio',
 		name: 'gender',
@@ -129,9 +129,22 @@ const myForm = [
 		type: 'textarea',
 		name: 'additionalInfo',
 		id: 'add-info',
-		placeholder: 'Write some additional info, if necessary.',
+		placeholder: 'Write some additional info',
 		rows: '5',
 		label: 'Additional Info',
+		info:
+			'Inserisci tutte le informazioni aggiuntive che sono state richieste nel bando.',
+	},
+
+	// CHECKBOX -> PRIVACY
+	{
+		type: 'checkbox',
+		name: 'agree',
+		id: 'privacy-1',
+		label: 'Acconsenti al trattamento dei dati?',
+		info:
+			'Acconsenti al trattamento dei dati, bla bla bla.\nTutti i tuoi dati saranno nostri.',
+		required: 'required',
 	},
 
 	// SUBMIT E RESET

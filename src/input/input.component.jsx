@@ -1,29 +1,51 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { maskValue, unMaskValue } from './input.utils';
 
+import './input.style.scss';
+
 class Input extends React.PureComponent {
-	constructor(props) {
-		super(props);
-
-		this.fieldRef = createRef();
-	}
-
 	//
 	// Renderizzo il campo di input in base al tipo contenuto nei props
 	//
 
 	renderField = (fieldValue, onChange, htmlProps) => {
-		const { id, name, options, ...input } = htmlProps;
+		const { id, name, options, innerRef, ...input } = htmlProps;
 
 		switch (input.type) {
-			// I tipi radio e checkbox comprendono varie opzioni e richiedono
-			//  un trattamento particolare
-			case 'radio':
+			// Il tipo checkbox richiede un trattamento speciale in quanto
+			//  è un campo booleano controllato dall'attrivbuto checked e non
+			//  da value.
+			// Richiede anche un secondo label affiancato come un radio btn.
 			case 'checkbox':
 				return (
-					<div className='radio-check-container'>
+					<div className='check-container'>
+						<label htmlFor={id}>
+							{name.charAt(0).toUpperCase() + name.slice(1) + ':'}
+						</label>
+						<input
+							className='radio-check'
+							id={id}
+							name={name}
+							checked={fieldValue}
+							ref={innerRef}
+							onChange={onChange}
+							{...input}
+						/>
+					</div>
+				);
+
+			// Il tipo radio è usato per selezionare una tra varie opzioni.
+			// Tali opzioni devono essere contenute nel campo options dei props
+			//  e generano un pulsante radio ciascuna. Il campo value di un
+			//  radio contiene il nome dell'opzione che rappresenta.
+			// A ciascun pulsante è dunque affiancato un label che contiene
+			//  il nome dell'opzione di quel pulsante, con la lettera maiuscola.
+			// I pulsanti e i loro label sono raggruppati all'interno di un div.
+			case 'radio':
+				return (
+					<div className='radio-container'>
 						{options.map((option, indx) => (
 							<React.Fragment key={indx}>
 								<label htmlFor={`${name}-${option}`}>
@@ -42,6 +64,7 @@ class Input extends React.PureComponent {
 						))}
 					</div>
 				);
+
 			// Il tag select deve essere costruito con all'interno i suoi
 			//  vari tag option
 			case 'select':
@@ -50,6 +73,7 @@ class Input extends React.PureComponent {
 						id={id}
 						name={name}
 						value={fieldValue}
+						ref={innerRef}
 						onChange={onChange}
 						{...input}>
 						{options.map((option, indx) => (
@@ -59,6 +83,7 @@ class Input extends React.PureComponent {
 						))}
 					</select>
 				);
+
 			// Il tipo textarea richiede un trattamento speciale in quanto non
 			//  è un tag <input> ma un tag <textarea>
 			case 'textarea':
@@ -67,21 +92,23 @@ class Input extends React.PureComponent {
 						id={id}
 						name={name}
 						value={fieldValue}
+						ref={innerRef}
 						onChange={onChange}
 						{...input}
 					/>
 				);
+
+			// Tipi: text, email, password, data, file, tel, url, range
 			default:
-				// NOTA1: confirmPassword necessita di un ref per la validaz.
-				// NOTA2: il tipo file è un componente incontrollato e
-				//  necessita un campo value pari ad undefined
+				// Il tipo file è un componente incontrollato e necessita un
+				//  campo value pari ad undefined
 				return (
 					<input
 						id={id}
 						name={name}
 						value={input.type !== 'file' ? fieldValue : undefined}
-						ref={this.fieldRef}
-						onChange={event => onChange(event, this.fieldRef)}
+						ref={innerRef}
+						onChange={onChange}
 						{...input}
 					/>
 				);
@@ -93,7 +120,7 @@ class Input extends React.PureComponent {
 	//  componente padre.
 	//
 
-	handleMaskedField = (event, fieldRef = null) => {
+	handleMaskedField = event => {
 		const value = event.target.value;
 
 		// Pulisco il contenuto del campo, eliminando la maschera
@@ -103,7 +130,7 @@ class Input extends React.PureComponent {
 		//  campo value. In questo modo il componente padre, aggiungerà nello
 		//  stato l'input raw dell'utente.
 		event.target.value = unmasked;
-		this.props.onChange(event, fieldRef);
+		this.props.onChange(event);
 	};
 
 	//
@@ -113,8 +140,8 @@ class Input extends React.PureComponent {
 	render() {
 		const {
 			label,
+			info,
 			errMsg,
-			id,
 			mask,
 			fieldValue,
 			onChange,
@@ -126,8 +153,9 @@ class Input extends React.PureComponent {
 		const masked = maskValue(fieldValue, mask);
 
 		return (
-			<section className='input-group' key={id}>
-				{label && <label htmlFor={id}>{label}</label>}
+			<section className='input-group' key={htmlProps.id}>
+				{label && <label htmlFor={htmlProps.id}>{label}</label>}
+				{info && <p className='info-msg'>{info}</p>}
 				{mask
 					? this.renderField(masked, this.handleMaskedField, htmlProps)
 					: this.renderField(fieldValue, onChange, htmlProps)}
@@ -150,8 +178,17 @@ Input.propTypes = {
 	// Valore contenuto all'interno del campo. Deve corrispondere ad una
 	//  parte dello stato del padre, altrimenti il componente diventa
 	//  incontrollato
-	fieldValue: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
-		.isRequired,
+	fieldValue: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.object,
+		PropTypes.bool,
+	]).isRequired,
+
+	// Un ref creato nel componente padre, da associare all'elemento HTML
+	//  corrispondente all'input. In questo modo il componente padre può
+	//  effettuare modifiche imperative all'elemento DOM.
+	// Utile per i campi di tipo file e per la validazione custom.
+	innerRef: PropTypes.shape({ current: PropTypes.any }),
 
 	// Callback da passare all'evento onChange dell'elemento.
 	// Deve avere due parametri: l'evento e il ref dell'elemento, posto a
@@ -160,6 +197,8 @@ Input.propTypes = {
 
 	// Contenuto dell'elemento html <label> che verrà creato sopra l'input
 	label: PropTypes.string,
+	// Messaggio per fornire ulteriori dettagli riguardo al campo
+	info: PropTypes.string,
 	// Messaggio di errore che apparirà in caso di conenuto invalido
 	errMsg: PropTypes.string,
 };

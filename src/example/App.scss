@@ -1,40 +1,15 @@
-:root {
-	--main-color: white;
-	--secondary-color: grey;
-	--font-color: black;
-}
+.ri-render-test {
+	margin: 15px auto 0;
+	padding: 10px;
+	width: fit-content;
+	border: 2px solid black;
 
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	color: var(--font-color);
-}
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
 
-body {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-		sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-
-	margin: 50px 50px;
-}
-
-ul {
-	list-style-type: none;
-}
-
-a {
-	text-decoration: none;
-	color: var(--font-color);
-}
-
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-		monospace;
-}
-
-h1 {
-	text-align: center;
+	& > button {
+		padding: 10px;
+	}
 }
