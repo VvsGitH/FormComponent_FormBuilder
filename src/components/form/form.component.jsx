@@ -101,8 +101,15 @@ class Form extends React.PureComponent {
 	handleSubmit = event => {
 		event.preventDefault();
 
-		// Invia i campi alla funzione onChange del padre
-		this.props.onSubmit(this.state);
+		// Estraggo dallo stato un oggetto contenente solo i campi compilati
+		//  dall'utente.
+		const filledFields = {};
+		for (let field in this.state) {
+			if (this.state[field]) filledFields[field] = this.state[field];
+		}
+
+		// Invio i campi alla funzione onChange del padre
+		this.props.onSubmit(filledFields);
 	};
 
 	//
@@ -143,6 +150,12 @@ class Form extends React.PureComponent {
 }
 
 Form.propTypes = {
+	// Array che descrive il contenuto del form.
+	// Ogni elemento di formData contiene le informazioni necessarie a creare
+	//  un campo del form: queste informazioni comprendono attributi html e
+	//  attributi custom.
+	// I tipi supportati sono elencati nel file ./form.types.js
+
 	formData: PropTypes.arrayOf(
 		PropTypes.shape({
 			type: PropTypes.string.isRequired,
@@ -150,6 +163,10 @@ Form.propTypes = {
 			id: PropTypes.string.isRequired,
 		})
 	).isRequired,
+
+	// Funzione per la gestione del submit da parte del componente padre.
+	// Il componente Form chiamerà questa funzione inserendo in input i valori
+	//  di tutti i campi non vuoti del form.
 
 	onSubmit: PropTypes.func.isRequired,
 };

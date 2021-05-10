@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { maskValue, unMaskValue } from './input.utils';
-import InputFile from '../input-file/input-file.component';
-import InputRadios from '../input-radios/input-radios.component';
-import InputCheckboxes from '../input-checkboxes/input-checkboxes.component';
+import {
+	InputFile,
+	InputRadios,
+	InputCheckboxes,
+} from '../custom-input-fields';
 
 import './input.style.scss';
 

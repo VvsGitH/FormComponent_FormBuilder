@@ -82,7 +82,7 @@ const myForm = [
 		placeholder: 'Insert your email',
 		label: 'Email',
 		required: true,
-		pattern: '^([a-z-]+\\.?)+[a-z-]+@([a-z-]+\\.)+[a-z-]{2,4}$',
+		pattern: '^([a-z0-9-]+\\.?)+[a-z0-9-]+@([a-z-]+\\.)+[a-z-]{2,4}$',
 		errMsg: 'Insert a correct email address\nEg: my.address@domain.com',
 	},
 
