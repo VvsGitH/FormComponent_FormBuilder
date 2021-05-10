@@ -1,0 +1,50 @@
+.hidden-file-field {
+	// Se metto display:none o height:0, il messaggio di campo non valido
+	//  al submit del form non appare. Dunque ho implementato questo hack.
+	opacity: 0;
+	height: 1px;
+}
+
+.custom-file-field {
+	display: grid;
+	column-gap: 2%;
+	grid-template-columns: 15% 83%;
+}
+
+.custom-file-label {
+	border-bottom: 1px solid grey;
+	padding: 5px;
+	font-size: 1rem;
+	color: gray;
+	white-space: pre-line;
+
+	&.file-invalid {
+		color: red;
+	}
+}
+
+.custom-file-btn {
+	padding: 7px 0;
+
+	background-color: white;
+	border: 1px solid grey;
+
+	font-size: 1rem;
+	font-weight: 500;
+	letter-spacing: 0.1rem;
+
+	&:hover {
+		border: 3px solid black;
+		font-weight: bold;
+	}
+
+	&:focus {
+		outline: none;
+		border: 3px solid black;
+		font-weight: bold;
+
+		~ .custom-file-label {
+			border-bottom: 3px solid black;
+		}
+	}
+}

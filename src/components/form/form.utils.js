@@ -32,17 +32,21 @@ export const calculateFieldsArrays = formData => {
 
 // Costruisco un oggetto a partire dall'array fieldsData utilizzando reduce:
 // 	estraggo il campo name da ogni elemento di fieldsData e gli associo un
-// 	valore iniziale pari ad una stringa vuota
+// 	valore iniziale pari a null.
 // Nel caso di un campo select, devo assegnargli la prima opzione, cioè quella
-//  visibile di default, come valore iniziale
+//  visibile di default, come valore iniziale.
+// Nel caso del tipo checkboxes, è necessario inizializzare un array di false
+//  di dimensione pari al numero di pulsanti checkbox che verranno generati.
 
 export const createInitialState = fieldsData =>
-	fieldsData.reduce((acc, curr) => {
-		if (curr.name) {
-			if (curr.type === 'select') acc[curr.name] = curr.options[0];
-			else acc[curr.name] = '';
+	fieldsData.reduce((state, field) => {
+		if (field.name) {
+			if (field.type === 'select') state[field.name] = field.options[0];
+			else if (field.type === 'checkboxes')
+				state[field.name] = Array(field.options.length).fill(false);
+			else state[field.name] = '';
 		}
-		return acc;
+		return state;
 	}, {});
 
 // Eseguo la shallow comparison tra due formData
@@ -99,7 +103,7 @@ export const stringifyAndHash = obj => {
 	let hash = 0;
 	if (str.length === 0) return hash;
 	for (let i = 0; i < str.length; i++) {
-		let char = str.charCodeAt(i);
+		const char = str.charCodeAt(i);
 		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}

@@ -1,0 +1,10 @@
+.checkbox-container {
+	display: grid;
+	grid-template-columns: max-content min-content;
+
+	gap: 10px 20px;
+
+	input:hover {
+		transform: scale(1.3);
+	}
+}

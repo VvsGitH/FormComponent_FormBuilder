@@ -1,5 +1,5 @@
 export const maskValue = (value, mask) => {
-	if (!mask) return value;
+	if (!mask || !value) return value;
 
 	let maskIndx = 0;
 	let valueIndx = 0;
@@ -9,18 +9,17 @@ export const maskValue = (value, mask) => {
 		if (mask[maskIndx] === '#') {
 			masked = masked.concat(value[valueIndx]);
 			valueIndx++;
-			maskIndx++;
 		} else {
 			masked = masked.concat(mask[maskIndx]);
-			maskIndx++;
 		}
+		maskIndx++;
 	}
 
 	return masked;
 };
 
 export const unMaskValue = (masked, mask) => {
-	if (!mask) return masked;
+	if (!mask || !masked) return masked;
 
 	let unmasked = '';
 

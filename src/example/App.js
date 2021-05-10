@@ -13,6 +13,8 @@ function App() {
 	//  ri-rendering del padre.
 
 	const [testState, setTestState] = useState(false);
+	const [isFormVisible, setFormVisible] = useState(true);
+	const [formFields, setFormFields] = useState(null);
 
 	// Il componenete padre deve fornire la propria funzione handleSubmit
 	//  al form. La funzione, riceve anche i valori contenuti in tutti i
@@ -20,7 +22,8 @@ function App() {
 
 	const handleSubmit = useCallback(fields => {
 		console.log('FORM SUBMITTED');
-		console.log(fields);
+		setFormFields(fields);
+		//setFormVisible(false);
 	}, []);
 
 	// Il form richiede come prop un array di oggetti - myForm - contenente
@@ -33,9 +36,17 @@ function App() {
 			<div className='ri-render-test'>
 				<p>Click this button to re-render the App component</p>
 				<button onClick={() => setTestState(!testState)}>RI-RENDER APP</button>
+				<p>Click this button to show/hide the form</p>
+				<button onClick={() => setFormVisible(!isFormVisible)}>
+					SHOW/HIDE
+				</button>
+				<p>CLick this button to log the form fields</p>
+				<button onClick={() => console.log(formFields)}>LOG</button>
 			</div>
 
-			<Form key={FORM_KEY} formData={myForm} onSubmit={handleSubmit} />
+			{isFormVisible && (
+				<Form key={FORM_KEY} formData={myForm} onSubmit={handleSubmit} />
+			)}
 		</>
 	);
 }

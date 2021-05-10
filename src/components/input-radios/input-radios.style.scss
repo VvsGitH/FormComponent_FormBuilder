@@ -1,0 +1,12 @@
+.radio-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 20px;
+
+	& > label {
+		margin-right: -10px;
+		font-size: 1rem;
+		font-weight: normal;
+	}
+}

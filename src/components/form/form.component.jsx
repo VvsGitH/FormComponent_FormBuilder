@@ -56,51 +56,16 @@ class Form extends React.PureComponent {
 	//
 
 	handleChange = event => {
-		const { value, files, name, type } = event.target;
+		const { value, name, files, type } = event.target;
 
 		// Vario lo stato in base in base al tipo di campo che è variato
 		// Il tipo file contiene il/i file nel campo files e non value
 		// Il tipo checkbox è un boolean
 		// Per tutti gli altri va bene il campo value
 		if (type === 'file') {
-			this.setState({ [name]: files });
-		} else if (type === 'checkbox') {
-			this.setState({ [name]: !this.state[name] });
+			this.setState({ [name]: files.length > 0 ? files : '' });
 		} else {
 			this.setState({ [name]: value });
-		}
-
-		// Validazione del campo confirmPassword, se presente
-		if (name === 'confirmPassword') {
-			if (value !== this.state.password) {
-				this.fieldsRefs[name].ref.current.setCustomValidity(
-					"Passwords don't match"
-				);
-			} else {
-				this.fieldsRefs[name].ref.current.setCustomValidity('');
-			}
-		}
-
-		// Validazione dei campi di tipo file
-		// Solo se l'elemento html specifica l'attributo accept
-		if (type === 'file' && event.target.accept) {
-			this.fieldsRefs[name].ref.current.setCustomValidity('');
-			if (event.target.value) {
-				// Estraggo l'estensione del file dal campo value
-				let extIndx = event.target.value.lastIndexOf('.');
-				let extension = event.target.value.slice(extIndx);
-
-				// Estraggo l'array delle estensioni valide dall'attributo
-				//  accept dell'elemento html
-				const validExtensions = event.target.accept.split(', ');
-
-				// Verifico che l'estensione del file sia nell'array
-				if (!validExtensions.includes(extension)) {
-					this.fieldsRefs[name].ref.current.setCustomValidity(
-						'File format not supported'
-					);
-				}
-			}
 		}
 	};
 
@@ -112,13 +77,19 @@ class Form extends React.PureComponent {
 		event.preventDefault();
 		this.setState(createInitialState(this.fields));
 
-		// Resetto manualmente l'attributo value dei campi file utilizzando
-		//  i loro refs. Essendo campi non controllati, la variazione dello
-		//  stato non influisce sul loro contenuto.
+		// Resetto manualmente i campi file utilizzando i loro refs.
+		// Essendo campi non controllati, la variazione dello stato non
+		//  influisce sul loro contenuto.
 		for (let key in this.fieldsRefs) {
 			if (this.fieldsRefs[key].type === 'file') {
-				this.fieldsRefs[key].ref.current.value = null;
-				this.fieldsRefs[key].ref.current.setCustomValidity('');
+				this.fieldsRefs[key].ref.current.value = '';
+				this.fieldsRefs[key].ref.current.files = null;
+
+				// Triggero manualmente l'evento change dell'elemento: in
+				//  questo modo viene eseguita la funzione handleChange che
+				//  resetta la scritta riportata sull'elemento file custom.
+				let changeEvent = new Event('change', { bubbles: true });
+				this.fieldsRefs[key].ref.current.dispatchEvent(changeEvent);
 			}
 		}
 	};
@@ -132,9 +103,6 @@ class Form extends React.PureComponent {
 
 		// Invia i campi alla funzione onChange del padre
 		this.props.onSubmit(this.state);
-
-		// Cancella il form
-		this.handleReset(event);
 	};
 
 	//
@@ -153,11 +121,12 @@ class Form extends React.PureComponent {
 				className='form'
 				onSubmit={this.handleSubmit}
 				onReset={this.handleReset}>
-				{this.fields.map(field => (
+				{this.fields.map(({ equalTo, ...field }) => (
 					<Input
 						key={field.id}
 						fieldValue={this.state[field.name]}
 						innerRef={this.fieldsRefs[field.name].ref}
+						equalTo={equalTo ? this.state[equalTo] : null}
 						onChange={this.handleChange}
 						{...field}
 					/>

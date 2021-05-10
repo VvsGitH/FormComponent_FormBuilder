@@ -12,7 +12,7 @@ const myForm = [
 
 	// GENDER RADIO SELECTORS
 	{
-		type: 'radio',
+		type: 'radios',
 		name: 'gender',
 		// Questo è l'id del fragment principale
 		id: 'gender-radios',
@@ -68,7 +68,7 @@ const myForm = [
 		id: 'user-1',
 		placeholder: 'Insert your user name',
 		label: 'User Name',
-		required: 'required',
+		required: true,
 		maxLength: '10',
 		pattern: "[^$&+,:;.=?@#|'<>^*()%! ]{0,}",
 		errMsg: 'Max 10 chars\nNo spaces, no special chars.',
@@ -81,7 +81,7 @@ const myForm = [
 		id: 'email-1',
 		placeholder: 'Insert your email',
 		label: 'Email',
-		required: 'required',
+		required: true,
 		pattern: '^([a-z-]+\\.?)+[a-z-]+@([a-z-]+\\.)+[a-z-]{2,4}$',
 		errMsg: 'Insert a correct email address\nEg: my.address@domain.com',
 	},
@@ -93,7 +93,7 @@ const myForm = [
 		id: 'pass-1',
 		placeholder: 'Insert your password',
 		label: 'Password',
-		required: 'required',
+		required: true,
 		pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,15}',
 		errMsg: `From 6 to 15 character.
     	At least one lower case char.
@@ -108,7 +108,8 @@ const myForm = [
 		id: 'conf-pass-1',
 		placeholder: 'Confirm your password',
 		label: 'Confirm Password',
-		required: 'required',
+		required: true,
+		equalTo: 'password',
 		errMsg: 'The two password fields must be identical!',
 	},
 
@@ -119,7 +120,7 @@ const myForm = [
 		id: 'curriculum',
 		label: 'Curriculum Vitae',
 		accept:
-			'.pdf, .doc, .docx, .odt, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.oasis.opendocument.text',
+			'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.oasis.opendocument.text',
 		errMsg: 'The file format is invalid',
 	},
 
@@ -138,13 +139,26 @@ const myForm = [
 
 	// CHECKBOX -> PRIVACY
 	{
-		type: 'checkbox',
-		name: 'agree',
+		type: 'checkboxes',
+		name: 'privacy',
 		id: 'privacy-1',
+		options: [
+			{
+				label:
+					'Acconsenti al trattamento dei dati necessari per il funzionamento?',
+				required: true,
+			},
+			{
+				label: 'Acconsenti al trattamento dei dati per fini commerciali?',
+				required: false,
+			},
+			{
+				label: 'Acconsenti al trattamento dei dati da parte di terzi?',
+				required: false,
+			},
+		],
 		label: 'Acconsenti al trattamento dei dati?',
-		info:
-			'Acconsenti al trattamento dei dati, bla bla bla.\nTutti i tuoi dati saranno nostri.',
-		required: 'required',
+		info: "Leggi l'informativa sulla privacy al seguente link: _link_",
 	},
 
 	// SUBMIT E RESET
