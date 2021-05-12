@@ -15,7 +15,11 @@ class Input extends React.PureComponent {
 	// Renderizzo il campo di input in base al tipo contenuto nei props
 	//
 
-	renderField = (fieldValue, onChange, { options, innerRef, ...htmlProps }) => {
+	renderField = (
+		fieldValue,
+		onChange,
+		{ options, innerRef, required, ...htmlProps }
+	) => {
 		switch (htmlProps.type) {
 			case 'checkboxes':
 				return (
@@ -48,6 +52,7 @@ class Input extends React.PureComponent {
 						value={fieldValue}
 						ref={innerRef}
 						onChange={onChange}
+						required={required}
 						{...htmlProps}>
 						{options.map((option, indx) => (
 							<option key={indx} value={option}>
@@ -65,6 +70,7 @@ class Input extends React.PureComponent {
 						value={fieldValue}
 						ref={innerRef}
 						onChange={onChange}
+						required={required}
 						{...htmlProps}
 					/>
 				);
@@ -83,6 +89,7 @@ class Input extends React.PureComponent {
 						value={fieldValue}
 						ref={innerRef}
 						onChange={onChange}
+						required={required}
 						{...htmlProps}
 					/>
 				);

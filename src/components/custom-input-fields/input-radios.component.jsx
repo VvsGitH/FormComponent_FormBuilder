@@ -18,6 +18,7 @@ const InputRadios = ({
 	id,
 	name,
 	type,
+	required,
 	...htmlProps
 }) => (
 	<div id={id} className='radio-container'>
@@ -33,6 +34,7 @@ const InputRadios = ({
 					value={option}
 					checked={fieldValue === option}
 					onChange={onChange}
+					required={required}
 					{...htmlProps}
 				/>
 			</React.Fragment>

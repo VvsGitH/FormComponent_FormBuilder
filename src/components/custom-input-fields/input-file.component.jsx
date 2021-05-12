@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './input-file.style.scss';
 
-const InputFile = ({ innerRef, onChange, ...htmlProps }) => {
+const InputFile = ({ innerRef, onChange, required, ...htmlProps }) => {
 	const [filesInfo, setFilesInfo] = useState('Choose a file');
 	const [isValid, setIsValid] = useState(true);
 
@@ -74,6 +74,7 @@ const InputFile = ({ innerRef, onChange, ...htmlProps }) => {
 				ref={innerRef}
 				tabIndex='-1'
 				onChange={handleChange}
+				required={required}
 				{...htmlProps}
 			/>
 		</>
