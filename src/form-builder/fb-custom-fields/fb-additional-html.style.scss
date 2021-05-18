@@ -1,0 +1,11 @@
+.html-attributes {
+	grid-column: 1 / span 2;
+
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	column-gap: 20px;
+
+	& > button {
+		grid-column: 1 / span 2;
+	}
+}

@@ -1,0 +1,31 @@
+.form-builder {
+	border: 2px solid lightgray;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+
+	fieldset {
+		border: unset;
+	}
+
+	.fb-container {
+		border-bottom: 2px solid lightgray;
+		margin-bottom: 20px;
+		padding-bottom: 10px;
+		display: block;
+	}
+
+	.builder-header {
+		display: flex;
+		justify-content: space-around;
+		margin-bottom: 10px;
+	}
+
+	& > .add-btn {
+		align-self: center;
+	}
+
+	& > .submit-btn {
+		align-self: flex-end;
+	}
+}

@@ -1,0 +1,51 @@
+.field-builder {
+	display: flex;
+	flex-direction: column;
+
+	fieldset {
+		margin: 10px auto 10px 0;
+		padding: 10px 20px;
+
+		legend {
+			margin-left: -10px;
+			font-size: 1.1rem;
+			color: black;
+		}
+	}
+
+	input {
+		border: none;
+		border-bottom: 1px solid black;
+
+		&:focus {
+			outline: none;
+			border-bottom: 3px solid black;
+		}
+	}
+
+	.fb-title {
+		display: flex;
+
+		label {
+			margin-right: 10px;
+		}
+		input {
+			margin-right: 30px;
+		}
+	}
+
+	.fb-validation {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.fb-type {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.fb-descriptors {
+		display: flex;
+		flex-direction: column;
+	}
+}
