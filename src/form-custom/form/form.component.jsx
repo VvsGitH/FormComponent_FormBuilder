@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { createInitialState, calculateFieldsArrays } from './form.utils';
 import Input from '../input/input.component';
-import Button from '../button/button.component';
+import FormButton from '../../components/form-button/form-button.component';
 
 import './form.style.scss';
 
@@ -56,14 +56,16 @@ class Form extends React.PureComponent {
 	//
 
 	handleChange = event => {
-		const { value, name, files, type } = event.target;
+		const { name, type, value, checked, files } = event.target;
 
 		// Vario lo stato in base in base al tipo di campo che è variato
 		// Il tipo file contiene il/i file nel campo files e non value
-		// Il tipo checkbox è un boolean
 		// Per tutti gli altri va bene il campo value
 		if (type === 'file') {
-			this.setState({ [name]: files.length > 0 ? files : '' });
+			const filesCopy = [...files];
+			this.setState({ [name]: files.length > 0 ? filesCopy : '' });
+		} else if (type === 'checkbox') {
+			this.setState({ [name]: checked });
 		} else {
 			this.setState({ [name]: value });
 		}
@@ -102,14 +104,23 @@ class Form extends React.PureComponent {
 		event.preventDefault();
 
 		// Estraggo dallo stato un oggetto contenente solo i campi compilati
-		//  dall'utente.
+		//  dall'utente. Faccio una copia dei campi che non sono primitive.
 		const filledFields = {};
 		for (let field in this.state) {
-			if (this.state[field]) filledFields[field] = this.state[field];
+			if (this.state[field]) {
+				if (Array.isArray(this.state[field])) {
+					filledFields[field] = [...this.state[field]];
+				} else if (typeof this.state[field] === 'object') {
+					filledFields[field] = { ...this.state[field] };
+				} else filledFields[field] = this.state[field];
+			}
 		}
 
 		// Invio i campi alla funzione onChange del padre
 		this.props.onSubmit(filledFields);
+
+		// Resetto il form
+		event.target.reset();
 	};
 
 	//
@@ -131,7 +142,7 @@ class Form extends React.PureComponent {
 				{this.fields.map(({ equalTo, ...field }) => (
 					<Input
 						key={field.id}
-						fieldValue={this.state[field.name]}
+						fieldValue={field.type !== 'file' ? this.state[field.name] : null}
 						innerRef={this.fieldsRefs[field.name].ref}
 						equalTo={equalTo ? this.state[equalTo] : null}
 						onChange={this.handleChange}
@@ -141,7 +152,7 @@ class Form extends React.PureComponent {
 
 				<div className='btns-container'>
 					{this.btns.map(btn => (
-						<Button key={btn.id} {...btn} />
+						<FormButton key={btn.id} {...btn} />
 					))}
 				</div>
 			</form>

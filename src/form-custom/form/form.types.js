@@ -1,4 +1,5 @@
 export const supportedTypes = [
+	'checkbox',
 	'date',
 	'email',
 	'file',

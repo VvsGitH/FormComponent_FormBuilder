@@ -2,13 +2,19 @@ import React from 'react';
 import { supportedHtmlAttributes } from './html-attributes';
 import './fb-additional-html.style.scss';
 
+import AddButton from '../../components/add-button/add-button.component';
+import RemoveButton from '../../components/remove-button/remove-button.component';
+
 const FBAdditionalHtml = ({ onChange, additionalAttribs }) => (
 	<fieldset className='html-attributes'>
+		<legend>HTML Attributes</legend>
 		{additionalAttribs.map((attrib, indx) => (
-			<React.Fragment key={'attrib' + indx}>
-				<label>Name</label>
-				<label>Value</label>
+			<div className='attribute-container' key={'attrib' + indx}>
+				<label>Attribute {indx + 1}: </label>
+				<label htmlFor={'attr-name' + indx}>Name</label>
+				<label htmlFor={'attr-value' + indx}>Value</label>
 				<select
+					id={'attr-name' + indx}
 					value={attrib.name}
 					onChange={e => updateAttribName(additionalAttribs, e, indx, onChange)}
 					required>
@@ -22,32 +28,41 @@ const FBAdditionalHtml = ({ onChange, additionalAttribs }) => (
 				<input
 					type='text'
 					name={attrib}
+					id={'attr-value' + indx}
 					value={attrib.value}
 					onChange={e =>
 						updateAttribValue(additionalAttribs, e, indx, onChange)
 					}
+					placeholder="Insert the attribute's value"
 					disabled={attrib.name === ''}
 					required
 				/>
-				<button
-					className='rm-btn'
-					type='button'
-					onClick={() => removeAttrib(additionalAttribs, indx, onChange)}>
-					&#10006;
-				</button>
-			</React.Fragment>
+				<RemoveButton
+					title='Remove this html attribute'
+					onClick={() => removeAttrib(additionalAttribs, indx, onChange)}
+				/>
+			</div>
 		))}
 
-		<button
-			className='add-btn'
-			type='button'
-			onClick={() => addAttrib(additionalAttribs, onChange)}>
-			ADD HTML ATTRIBUTES
-		</button>
+		<AddButton
+			label='ADD NEW HTML ATTRIBUTE'
+			onClick={() => addAttrib(additionalAttribs, onChange)}
+		/>
 	</fieldset>
 );
 
-export default FBAdditionalHtml;
+// Setto qui il valore di default di additionalAttribs
+// Lo faccio qui e non direttamente in field-builder (come per gli altri campi)
+//  perchè l'array vuoto avrebbe una reference sempre diversa e causerebbe
+//  il ri-render del componente ad ogni ri-render di field-builder
+// Per fb-options il problema non si pone, in quanto al montaggio genera in
+//  automatico la prima opzione, che crea l'array options in fieldData e dunque
+//  l'array vuoto non viene più passato.
+FBAdditionalHtml.defaultProps = {
+	additionalAttribs: [],
+};
+
+export default React.memo(FBAdditionalHtml);
 
 //							//
 // ########################	//

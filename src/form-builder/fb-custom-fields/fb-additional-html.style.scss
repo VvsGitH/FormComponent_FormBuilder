@@ -1,11 +1,52 @@
 .html-attributes {
-	grid-column: 1 / span 2;
+	max-width: 85%;
 
-	display: grid;
-	grid-template-columns: max-content 1fr;
-	column-gap: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	input,
+	select {
+		border: none;
+		border-bottom: 1px solid gray;
+
+		&:focus {
+			outline: none;
+			border-bottom: 3px solid black;
+		}
+	}
 
 	& > button {
-		grid-column: 1 / span 2;
+		align-self: flex-start;
+	}
+
+	.attribute-container {
+		display: grid;
+		grid-template-columns: 15% 30% 35% 5%;
+		grid-template-areas:
+			'num th-name th-value  rm-btn'
+			'num i-select i-text rm-btn';
+		gap: 10px 5%;
+
+		& > label:first-child {
+			grid-area: num;
+			align-self: center;
+			justify-self: right;
+		}
+		& > label:nth-child(2) {
+			grid-area: th-name;
+		}
+		& > label:nth-child(3) {
+			grid-area: th-value;
+		}
+		& > select {
+			grid-area: i-select;
+		}
+		& > input[type='text'] {
+			grid-area: i-text;
+		}
+		& > button {
+			grid-area: rm-btn;
+		}
 	}
 }

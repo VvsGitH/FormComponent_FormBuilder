@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import './fb-options.style.scss';
 
+import AddButton from '../../components/add-button/add-button.component';
+import RemoveButton from '../../components/remove-button/remove-button.component';
+
 const FBOptions = ({ onChange, optionsArray, isCheckboxes }) => {
 	// Creo la prima opzione in automatico quando l'array è vuoto
 	useEffect(() => {
@@ -17,30 +20,35 @@ const FBOptions = ({ onChange, optionsArray, isCheckboxes }) => {
 				<div className={getClassName()} key={'option' + indx}>
 					{!isCheckboxes ? (
 						<>
-							<label>Option {indx + 1}: </label>
+							<label htmlFor={indx}>Option {indx + 1}: </label>
 							<input
 								type='text'
 								name='option'
+								id={indx}
 								value={option}
 								onChange={e => updateOption(optionsArray, e, indx, onChange)}
+								placeholder="Option's name"
 								required
 							/>
 						</>
 					) : (
 						<>
-							<label>Checkbox Label: </label>
-							<label>Is required? </label>
+							<label>Option {indx + 1}: </label>
+							<label htmlFor={indx}>Checkbox Label </label>
+							<label htmlFor={'req-' + indx}>Is required? </label>
 							<input
 								type='text'
 								name='option-label'
 								id={indx}
 								value={option.label}
 								onChange={e => updateOption(optionsArray, e, indx, onChange)}
+								placeholder="Option's name"
 								required
 							/>
 							<input
 								type='checkbox'
 								name='option-required'
+								id={'req-' + indx}
 								value='isRequired'
 								checked={option.required}
 								onChange={e => updateOption(optionsArray, e, indx, onChange)}
@@ -48,25 +56,21 @@ const FBOptions = ({ onChange, optionsArray, isCheckboxes }) => {
 							/>
 						</>
 					)}
-					<button
-						className='rm-btn'
-						type='button'
-						onClick={() => removeOption(optionsArray, indx, onChange)}>
-						&#10006;
-					</button>
+					<RemoveButton
+						title='Remove this option'
+						onClick={() => removeOption(optionsArray, indx, onChange)}
+					/>
 				</div>
 			))}
-			<button
-				className='add-btn'
-				type='button'
-				onClick={() => addOption(optionsArray, onChange, isCheckboxes)}>
-				ADD OPTION
-			</button>
+			<AddButton
+				label='ADD NEW OPTION'
+				onClick={() => addOption(optionsArray, onChange, isCheckboxes)}
+			/>
 		</div>
 	);
 };
 
-export default FBOptions;
+export default React.memo(FBOptions);
 
 //							//
 // ########################	//
@@ -104,7 +108,7 @@ const updateOption = (optionsArray, event, indx, eventCallback) => {
 };
 
 const removeOption = (optionsArray, indx, eventCallback) => {
-	if (!optionsArray.length === 1) {
+	if (optionsArray.length > 1) {
 		const currentOptions = [...optionsArray];
 		currentOptions.splice(indx, 1);
 		eventCallback({ target: { name: 'options', value: currentOptions } });

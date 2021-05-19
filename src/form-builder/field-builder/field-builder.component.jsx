@@ -1,30 +1,18 @@
 import React from 'react';
 
 import { supportedTypes } from '../../form-custom/form/form.types';
+import Input from '../../form-custom/input/input.component';
 
-import { FBInput, FBOptions, FBAdditionalHtml } from '../fb-custom-fields';
+import { FBOptions, FBAdditionalHtml } from '../fb-custom-fields';
 
 import './field-builder.style.scss';
 
 const TYPES_WITH_OPTIONS = ['select', 'radios', 'checkboxes'];
 const TEXT_TYPES = ['text', 'email', 'password', 'url', 'tel'];
 
-const FieldBuilder = ({ indx, onChange, fieldData, usedNames }) => {
-	const {
-		name,
-		id,
-		type,
-		options,
-		equalTo,
-		mask,
-		required,
-		additionalAttribs,
-		label,
-		info,
-		errMsg,
-	} = fieldData;
-
-	const handleChange = event => {
+class FieldBuilder extends React.PureComponent {
+	handleChange = event => {
+		const { indx, onChange, fieldData, usedNames } = this.props;
 		const newFieldData = { ...fieldData };
 		switch (event.target.name) {
 			case 'name':
@@ -33,15 +21,16 @@ const FieldBuilder = ({ indx, onChange, fieldData, usedNames }) => {
 					event.target.setCustomValidity('This name has already been used!');
 				}
 				newFieldData.name = event.target.value;
-				// Genero l'id in base al nome: name-234
-				newFieldData.id =
-					event.target.value + '-' + Math.floor(Math.random() * 1000);
+				// Genero l'id in base al nome: name_234
+				if (event.target.value) {
+					newFieldData.id =
+						event.target.value + '_' + Math.floor(Math.random() * 1000);
+				} else {
+					newFieldData.id = '';
+				}
 				break;
 			case 'required':
-				if (!newFieldData.required) {
-					newFieldData.required = false;
-				}
-				newFieldData.required = !newFieldData.required;
+				newFieldData[event.target.name] = event.target.checked;
 				break;
 			case 'type':
 				if (fieldData.type && fieldData.type !== event.target.value) {
@@ -69,94 +58,147 @@ const FieldBuilder = ({ indx, onChange, fieldData, usedNames }) => {
 		onChange(newFieldData, indx);
 	};
 
-	return (
-		<div className='field-builder'>
-			<fieldset className='fb-title'>
-				<legend>Field Title</legend>
-				<FBInput
-					name='name'
-					fieldValue={name}
-					onChange={handleChange}
-					required
-				/>
-				<FBInput name='id' fieldValue={id} readOnly />
-			</fieldset>
+	render() {
+		const {
+			name,
+			id,
+			type,
+			options,
+			equalTo,
+			mask,
+			required,
+			additionalAttribs,
+			label,
+			info,
+			errMsg,
+		} = this.props.fieldData;
 
-			<fieldset className='fb-type'>
-				<legend>Field Type</legend>
-				<label>Type: </label>
-				<select
-					name='type'
-					value={type ? type : ''}
-					onChange={handleChange}
-					required>
-					<option value=''>Choose a type</option>
-					{supportedTypes.map(type => (
-						<option key={type} value={type}>
-							{type}
-						</option>
-					))}
-				</select>
-
-				{type && TYPES_WITH_OPTIONS.includes(type) && (
-					<FBOptions
-						optionsArray={options ? options : []}
-						onChange={handleChange}
-						isCheckboxes={type === 'checkboxes'}
+		return (
+			<div className='field-builder'>
+				<fieldset className='fb-basic'>
+					<legend>Basic Field Properties</legend>
+					<Input
+						type='text'
+						name='name'
+						id='name'
+						fieldValue={name}
+						onChange={this.handleChange}
+						required={true}
+						placeholder='Eg: userName'
+						pattern="[^$&+,:;.=?@#|'<>^*()%! ]{1,}"
+						label='Name'
+						errMsg={`The name must be unique
+							No spaces and special characters!`}
 					/>
-				)}
-
-				{type && type !== 'checkboxes' && (
-					<FBInput
-						type='checkbox'
-						name='required'
-						fieldValue={required}
-						onChange={handleChange}
+					<Input
+						type='text'
+						name='id'
+						id='id'
+						fieldValue={id}
+						readOnly
+						placeholder='This field will auto-fill'
+						label='Id'
 					/>
-				)}
-			</fieldset>
-
-			{type && TEXT_TYPES.includes(type) && (
-				<fieldset className='fb-validation'>
-					<legend>Custom Field Validation</legend>
-					<FBInput
-						name='equalTo'
-						fieldValue={equalTo}
-						onChange={handleChange}
+					<Input
+						type='select'
+						name='type'
+						id='type'
+						fieldValue={type}
+						onChange={this.handleChange}
+						options={supportedTypes}
+						required={true}
+						label='Type'
+						errMsg='Choose the field type'
 					/>
-					<FBInput name='mask' fieldValue={mask} onChange={handleChange} />
+
+					{type && TYPES_WITH_OPTIONS.includes(type) && (
+						<FBOptions
+							optionsArray={options ? options : []}
+							onChange={this.handleChange}
+							isCheckboxes={type === 'checkboxes'}
+						/>
+					)}
+
+					{type && type !== 'checkboxes' && (
+						<Input
+							type='checkbox'
+							name='required'
+							id='required'
+							fieldValue={required}
+							onChange={this.handleChange}
+							label='Is Required?'
+						/>
+					)}
 				</fieldset>
-			)}
 
-			<FBAdditionalHtml
-				additionalAttribs={additionalAttribs ? additionalAttribs : []}
-				onChange={handleChange}
-			/>
+				{type && TEXT_TYPES.includes(type) && (
+					<fieldset className='fb-validation'>
+						<legend>Custom Field Validation</legend>
+						<Input
+							type='text'
+							name='equalTo'
+							id='equalTo'
+							fieldValue={equalTo}
+							onChange={this.handleChange}
+							placeholder='Insert the name of the other field'
+							label='EqualTo'
+							info='This custom attribute allows to specify a field that this field must be equal to in order to be valid.'
+						/>
+						<Input
+							type='text'
+							name='mask'
+							id='mask'
+							fieldValue={mask}
+							onChange={this.handleChange}
+							placeholder='Eg: (###) ###-###'
+							label='Mask'
+							info='This custom attribute allows to specify a mask for the field. The mask must have # as the masked character.'
+						/>
+					</fieldset>
+				)}
 
-			<fieldset className='fb-descriptors'>
-				<legend>Field Descriptors</legend>
-				<FBInput
-					name='label'
-					fieldValue={label}
-					onChange={handleChange}
-					required
+				<FBAdditionalHtml
+					additionalAttribs={additionalAttribs}
+					onChange={this.handleChange}
 				/>
-				<FBInput
-					type='textarea'
-					name='info'
-					fieldValue={info}
-					onChange={handleChange}
-				/>
-				<FBInput
-					type='textarea'
-					name='errMsg'
-					fieldValue={errMsg}
-					onChange={handleChange}
-					required
-				/>
-			</fieldset>
-		</div>
-	);
-};
+
+				<fieldset className='fb-descriptors'>
+					<legend>Field Descriptors</legend>
+					<Input
+						type='text'
+						name='label'
+						id='label'
+						fieldValue={label}
+						onChange={this.handleChange}
+						required={true}
+						placeholder='Insert the label of the field'
+						label='Label'
+					/>
+					<Input
+						type='textarea'
+						name='info'
+						id='info'
+						fieldValue={info}
+						onChange={this.handleChange}
+						placeholder='Eg: Write a small description about the field to help the user understand it'
+						label='Info Message'
+						info='Write a small description about the field to help the user understand it'
+					/>
+					<Input
+						type='textarea'
+						name='errMsg'
+						id='errMsg'
+						fieldValue={errMsg}
+						onChange={this.handleChange}
+						required={true}
+						placeholder='Eg: Only letters allowed'
+						label='Error Message'
+						info='Write the error message that should appear when the field is invalid'
+					/>
+				</fieldset>
+			</div>
+		);
+	}
+}
 
 export default FieldBuilder;

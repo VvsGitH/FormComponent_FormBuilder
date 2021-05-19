@@ -1,45 +1,27 @@
 .field-builder {
 	display: flex;
 	flex-direction: column;
+	//border: 2px solid lightgray;
 
 	fieldset {
+		border: unset;
 		margin: 10px auto 10px 0;
 		padding: 10px 20px;
+		width: 100%;
 
 		legend {
 			margin-left: -10px;
-			font-size: 1.1rem;
-			color: black;
+			font-size: 1.2rem;
+			color: gray;
+			grid-column: 1 / span 2;
+
+			& + section {
+				margin-top: 0;
+			}
 		}
 	}
 
-	input {
-		border: none;
-		border-bottom: 1px solid black;
-
-		&:focus {
-			outline: none;
-			border-bottom: 3px solid black;
-		}
-	}
-
-	.fb-title {
-		display: flex;
-
-		label {
-			margin-right: 10px;
-		}
-		input {
-			margin-right: 30px;
-		}
-	}
-
-	.fb-validation {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.fb-type {
+	.fb-basic {
 		display: flex;
 		flex-direction: column;
 	}

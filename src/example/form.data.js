@@ -133,8 +133,7 @@ const myForm = [
 		placeholder: 'Write some additional info',
 		rows: '5',
 		label: 'Additional Info',
-		info:
-			'Inserisci tutte le informazioni aggiuntive che sono state richieste nel bando.',
+		info: 'Inserisci tutte le informazioni aggiuntive che sono state richieste nel bando.',
 	},
 
 	// CHECKBOX -> PRIVACY

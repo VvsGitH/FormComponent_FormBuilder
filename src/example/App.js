@@ -8,12 +8,12 @@ import React, {
 
 import './App.scss';
 
-import Form from '../form-custom/form/form.component';
-import { stringifyAndHash } from '../form-custom/form/form.utils';
-
 import FormBuilder from '../form-builder/form-builder/form-builder.component';
 
+import Form from '../form-custom/form/form.component';
+import { stringifyAndHash } from '../form-custom/form/form.utils';
 import myForm from './form.data';
+
 const FORM_KEY = stringifyAndHash(myForm);
 
 const tabsReducer = (state, action) => {
@@ -47,6 +47,7 @@ function App() {
 		custom: false,
 		builder: false,
 	});
+
 	const [customFormData, setCustomFormData] = useState(null);
 
 	const customFormKey = useRef();
@@ -77,17 +78,17 @@ function App() {
 			<h1>MY CUSTOM FORM</h1>
 
 			<div className='tabs-container'>
-				<button onClick={() => dispatch({ type: 'defaultVisibile' })}>
-					SHOW/HIDE DEFAULT FORM
-				</button>
 				<button onClick={() => dispatch({ type: 'builderVisible' })}>
-					SHOW/HIDE FORM BUILDER
+					{(visible.builder ? 'HIDE' : 'SHOW') + ' FORM BUILDER'}
 				</button>
 				{customFormData && (
 					<button onClick={() => dispatch({ type: 'customVisible' })}>
-						SHOW/HIDE BUILDED FORM
+						{(visible.custom ? 'HIDE' : 'SHOW') + ' BUILDED FORM'}
 					</button>
 				)}
+				<button onClick={() => dispatch({ type: 'defaultVisibile' })}>
+					{(visible.default ? 'HIDE' : 'SHOW') + ' DEMO FORM'}
+				</button>
 			</div>
 
 			{visible.default && (
@@ -96,7 +97,7 @@ function App() {
 			{visible.builder && <FormBuilder onSubmit={receiveCustomFormData} />}
 			{visible.custom && (
 				<Form
-					key={FORM_KEY}
+					key={customFormKey.current}
 					formData={customFormData}
 					onSubmit={handleSubmit}
 				/>

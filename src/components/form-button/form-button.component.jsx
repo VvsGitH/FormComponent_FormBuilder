@@ -1,27 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './button.style.scss';
+import './form-button.style.scss';
 
 // I pulsanti di tipo 'button' devono includere una funzione onClick custom.
 // I pulsanti di tipo 'submit' e 'reset' non richiedono una funzione onClick
 //  in quanto triggerano in automatico i rispettivi eventi nel form.
 
-const Button = ({ id, type, value, onClick }) => {
+const FormButton = ({ id, type, value, onClick }) => {
 	return (
-		<input
-			className='inp-btn'
-			id={id}
+		<button
+			className='form-btn'
 			type={type}
-			value={value}
-			onClick={type === 'button' ? onClick : null}
-		/>
+			id={id}
+			onClick={type === 'button' ? onClick : null}>
+			{value}
+		</button>
 	);
 };
 
-Button.propTypes = {
+FormButton.propTypes = {
 	// Tipo, id del pulsante html che deve essere generato
-	type: PropTypes.string.isRequired,
 	id: PropTypes.string.isRequired,
+	type: PropTypes.string, // default: button
 
 	// Stringa da far apparire sul pulsante
 	value: PropTypes.string.isRequired,
@@ -39,4 +39,8 @@ Button.propTypes = {
 	},
 };
 
-export default React.memo(Button);
+FormButton.defaultProps = {
+	type: 'button',
+};
+
+export default React.memo(FormButton);

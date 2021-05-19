@@ -1,31 +1,34 @@
 .form-builder {
-	border: 2px solid lightgray;
+	max-width: 1000px;
+	margin: 0 auto;
+
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
 
-	fieldset {
-		border: unset;
-	}
-
 	.fb-container {
-		border-bottom: 2px solid lightgray;
 		margin-bottom: 20px;
 		padding-bottom: 10px;
 		display: block;
+		border: 2px solid lightgray;
+
+		.builder-header {
+			margin: 15px auto;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 30px;
+		}
 	}
 
-	.builder-header {
-		display: flex;
-		justify-content: space-around;
-		margin-bottom: 10px;
-	}
-
-	& > .add-btn {
+	#add-field {
 		align-self: center;
+		transform: scale(1.2, 1.2);
+		margin-bottom: 30px;
 	}
 
-	& > .submit-btn {
-		align-self: flex-end;
+	#remove-field {
+		transform: scale(1.4, 1.4);
+		color: black;
 	}
 }

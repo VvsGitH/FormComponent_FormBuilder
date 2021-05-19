@@ -1,7 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import './form-builder.style.scss';
 
 import FieldBuilder from '../field-builder/field-builder.component';
-import './form-builder.style.scss';
+import FormButton from '../../components/form-button/form-button.component';
+import AddButton from '../../components/add-button/add-button.component';
+import RemoveButton from '../../components/remove-button/remove-button.component';
 
 class FormBuilder extends React.PureComponent {
 	constructor() {
@@ -9,6 +14,7 @@ class FormBuilder extends React.PureComponent {
 		this.state = {
 			fieldsData: [{}],
 		};
+		this.usedNames = [];
 	}
 
 	addField = () => {
@@ -21,19 +27,17 @@ class FormBuilder extends React.PureComponent {
 		this.setState({ fieldsData: newFieldsData });
 	};
 
-	handleChange = (fieldData, indx) => {
+	handleChange = (newFieldData, indx) => {
 		const newFieldsData = [...this.state.fieldsData];
-		newFieldsData[indx] = fieldData;
+		newFieldsData[indx] = newFieldData;
 		this.setState({ fieldsData: newFieldsData });
 	};
 
+	// From: {..., additionalAttribs: [{name, value}, {name,value}, ...], ...}
+	// To: {..., name:value, name:value, ..., ...}
 	spreadAdditionalAttribs = fieldsData => {
 		for (let i = 0; i < fieldsData.length; i++) {
 			if (fieldsData[i].additionalAttribs) {
-				// From:
-				// {..., additionalAttribs: [{name, value}, {name,value}, ...], ...}
-				// To:
-				// {..., name:value, name:value, ..., ...}
 				const attribsArr = [...fieldsData[i].additionalAttribs];
 				delete fieldsData[i].additionalAttribs;
 				for (let j = 0; j < attribsArr.length; j++) {
@@ -71,56 +75,73 @@ class FormBuilder extends React.PureComponent {
 
 		// Invio i campi al componente padre
 		this.props.onSubmit(stateCopy);
+
+		// Resetto il form
+		this.setState({ fieldsData: [{}] });
+	};
+
+	recomputeUsedNames = () => {
+		const newUsedNames = this.state.fieldsData
+			.filter(field => field.name)
+			.map(field => field.name);
+
+		if (newUsedNames.length !== this.usedNames.length) {
+			this.usedNames = newUsedNames;
+			return true;
+		}
+
+		for (let i = 0; i < newUsedNames.length; i++) {
+			if (newUsedNames[i] !== this.usedNames[i]) {
+				this.usedNames = newUsedNames;
+				return true;
+			}
+		}
+
+		// Non ci sono stati cambiamenti, this.usedNames è la stessa di prima
+		return false;
 	};
 
 	render() {
-		const usedNames = this.state.fieldsData
-			.filter(field => field.name)
-			.map(field => field.name);
+		this.recomputeUsedNames();
 
 		return (
 			<form onSubmit={this.handleSubmit} className='form-builder'>
 				{this.state.fieldsData.map((fieldData, indx) => (
 					<fieldset key={indx} className='fb-container'>
-						<div className='builder-header'>
-							<h2>Build the {setNumeration(indx + 1)} field</h2>
-							<button
-								type='button'
+						<header className='builder-header'>
+							<h2>BUILD FIELD {indx + 1}</h2>
+							<RemoveButton
+								id='remove-field'
 								onClick={() => this.removeField(indx)}
-								className='add-btn'>
-								REMOVE FIELD
-							</button>
-						</div>
+								title='REMOVE THIS FIELD'
+							/>
+						</header>
 						<FieldBuilder
 							indx={indx}
 							fieldData={fieldData}
-							usedNames={usedNames}
+							usedNames={this.usedNames}
 							onChange={this.handleChange}
 						/>
 					</fieldset>
 				))}
-				<button type='button' onClick={this.addField} className='add-btn'>
-					ADD NEW FIELD
-				</button>
-				<button type='submit' className='submit-btn'>
-					SUBMIT
-				</button>
+				<AddButton
+					id='add-field'
+					label='ADD NEW FIELD'
+					onClick={this.addField}
+				/>
+				<FormButton
+					type='submit'
+					id='submit'
+					onClick={this.addField}
+					value='SUBMIT'
+				/>
 			</form>
 		);
 	}
 }
 
-export default FormBuilder;
-
-const setNumeration = indx => {
-	switch (indx) {
-		case 1:
-			return '1st';
-		case 2:
-			return '2nd';
-		case 3:
-			return '3rd';
-		default:
-			return indx + 'th';
-	}
+FormBuilder.propTypes = {
+	onSubmit: PropTypes.func.isRequired,
 };
+
+export default FormBuilder;

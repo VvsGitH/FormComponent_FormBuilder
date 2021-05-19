@@ -1,34 +1,50 @@
 .options-builder {
-	margin-top: 10px;
-	margin-left: 20px;
+	margin: 15px 0 0 20px;
 	padding: 10px;
 	border-left: 1px solid lightgrey;
+	width: 80%;
 
 	display: flex;
 	flex-direction: column;
+	gap: 20px;
+
+	input {
+		border: none;
+		border-bottom: 1px solid gray;
+
+		&:focus {
+			outline: none;
+			border-bottom: 3px solid black;
+		}
+	}
+
+	& > button {
+		align-self: flex-start;
+	}
 
 	.option-container {
-		width: 100%;
+		width: fit-content;
 		display: flex;
 		gap: 20px;
 	}
 
-	.option-container + .option-container {
-		margin-top: 20px;
-	}
-
 	.checkboxes-container {
 		display: grid;
+		grid-template-columns: 15% 45% 15% 10%;
 		grid-template-areas:
-			'th-1 th-2 .'
-			'i-text i-check rm-btn';
-		gap: 10px 10px;
+			'option th-lab th-req  rm-btn'
+			'option i-text i-check rm-btn';
+		gap: 10px 5%;
 
-		&:first-child {
-			grid-area: th-1;
+		& > label:first-child {
+			grid-area: option;
+			align-self: center;
 		}
-		&:nth-child(2) {
-			grid-area: th-2;
+		& > label:nth-child(2) {
+			grid-area: th-lab;
+		}
+		& > label:nth-child(3) {
+			grid-area: th-req;
 		}
 		& > input[type='text'] {
 			grid-area: i-text;
@@ -36,14 +52,9 @@
 		& > input[type='checkbox'] {
 			grid-area: i-check;
 			align-self: center;
-			justify-self: center;
 		}
 		& > button {
 			grid-area: rm-btn;
 		}
-	}
-
-	.checkboxes-container + .checkboxes-container {
-		margin-top: 20px;
 	}
 }

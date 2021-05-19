@@ -1,0 +1,32 @@
+.add-btn {
+	align-self: center;
+	justify-self: center;
+
+	min-width: 50px;
+	min-height: 30px;
+	padding: 5px;
+
+	background-color: transparent;
+	border: 1px solid gray;
+
+	& > span:first-child {
+		color: gray;
+	}
+	& > span:nth-child(2) {
+		display: none;
+	}
+
+	&:hover,
+	&:focus {
+		outline: none;
+		border: 2px solid black;
+
+		& > span:first-child {
+			display: none;
+		}
+		& > span:nth-child(2) {
+			display: block;
+			color: black;
+		}
+	}
+}

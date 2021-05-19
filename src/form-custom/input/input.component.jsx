@@ -21,12 +21,28 @@ class Input extends React.PureComponent {
 		{ options, innerRef, required, ...htmlProps }
 	) => {
 		switch (htmlProps.type) {
+			// Genera una sequenza di pulsanti checkbox con un label in comune
 			case 'checkboxes':
 				return (
 					<InputCheckboxes
-						fieldValue={fieldValue}
+						fieldValue={
+							fieldValue ? fieldValue : Array(options.length).fill(false)
+						}
 						onChange={onChange}
 						options={options}
+						{...htmlProps}
+					/>
+				);
+
+			// Genera un singolo checkbox. I checkbox sono controllati dall'
+			//  attributo checked e non value!
+			case 'checkbox':
+				return (
+					<input
+						checked={fieldValue ? fieldValue : false}
+						ref={innerRef}
+						onChange={onChange}
+						required={required}
 						{...htmlProps}
 					/>
 				);
@@ -37,7 +53,7 @@ class Input extends React.PureComponent {
 			case 'radios':
 				return (
 					<InputRadios
-						fieldValue={fieldValue}
+						fieldValue={fieldValue ? fieldValue : ''}
 						onChange={onChange}
 						options={options}
 						{...htmlProps}
@@ -49,11 +65,12 @@ class Input extends React.PureComponent {
 			case 'select':
 				return (
 					<select
-						value={fieldValue}
+						value={fieldValue ? fieldValue : ''}
 						ref={innerRef}
 						onChange={onChange}
 						required={required}
 						{...htmlProps}>
+						<option value=''>Choose One</option>
 						{options.map((option, indx) => (
 							<option key={indx} value={option}>
 								{option}
@@ -67,7 +84,7 @@ class Input extends React.PureComponent {
 			case 'textarea':
 				return (
 					<textarea
-						value={fieldValue}
+						value={fieldValue ? fieldValue : ''}
 						ref={innerRef}
 						onChange={onChange}
 						required={required}
@@ -86,7 +103,7 @@ class Input extends React.PureComponent {
 			default:
 				return (
 					<input
-						value={fieldValue}
+						value={fieldValue ? fieldValue : ''}
 						ref={innerRef}
 						onChange={onChange}
 						required={required}
@@ -105,18 +122,18 @@ class Input extends React.PureComponent {
 
 	handleChange = event => {
 		// Custom validation
-		const { equalTo, innerRef, errMsg } = this.props;
+		const { equalTo, errMsg, onChange } = this.props;
 
 		// Validazione dei campi con il prop equalTo
 		// Il componente padre deve passare all'interno del prop il valore
 		//  attuale del campo con cui si sta effettuando il confronto.
-		if (equalTo !== null) {
+		if (equalTo !== null && equalTo !== undefined) {
 			if (event.target.value !== equalTo)
-				innerRef.current.setCustomValidity(errMsg);
-			else innerRef.current.setCustomValidity('');
+				event.target.setCustomValidity(errMsg);
+			else event.target.setCustomValidity('');
 		}
 
-		this.props.onChange(event);
+		onChange && onChange(event);
 	};
 
 	//
@@ -188,14 +205,14 @@ Input.propTypes = {
 	//  incontrollato
 	fieldValue: PropTypes.oneOfType([
 		PropTypes.string, // default
-		PropTypes.object, // file
-		PropTypes.arrayOf(PropTypes.bool), // checkbox
-	]).isRequired,
+		PropTypes.bool, // checkbox
+		PropTypes.arrayOf(PropTypes.bool), // checkboxes
+	]),
 
 	// Callback da passare all'evento onChange dell'elemento.
 	// Deve avere due parametri: l'evento e il ref dell'elemento, posto a
 	//  null di default.
-	onChange: PropTypes.func.isRequired,
+	onChange: PropTypes.func,
 
 	// --------- FORWARDED REF --------- //
 
@@ -221,7 +238,7 @@ Input.propTypes = {
 				label: PropTypes.string,
 				required: PropTypes.bool,
 			})
-		), // checkbox
+		), // checkboxes
 	]),
 
 	// Maschera da applicare all'input dell'utente
