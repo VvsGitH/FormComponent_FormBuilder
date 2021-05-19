@@ -1,6 +1,7 @@
 .form {
 	max-width: 1000px;
 	margin: 0 auto;
+	padding: 10px;
 
 	//display: grid;
 	//grid-template-columns: 1fr 1fr;
@@ -8,6 +9,10 @@
 
 	display: flex;
 	flex-direction: column;
+
+	& > h1 + section {
+		margin-top: 30px;
+	}
 
 	.btns-container {
 		margin-top: 40px;

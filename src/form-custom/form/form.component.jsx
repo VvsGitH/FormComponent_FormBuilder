@@ -139,6 +139,8 @@ class Form extends React.PureComponent {
 				className='form'
 				onSubmit={this.handleSubmit}
 				onReset={this.handleReset}>
+				<h1>{this.props.title}</h1>
+
 				{this.fields.map(({ equalTo, ...field }) => (
 					<Input
 						key={field.id}
@@ -161,6 +163,9 @@ class Form extends React.PureComponent {
 }
 
 Form.propTypes = {
+	// Il titolo del form
+	title: PropTypes.string,
+
 	// Array che descrive il contenuto del form.
 	// Ogni elemento di formData contiene le informazioni necessarie a creare
 	//  un campo del form: queste informazioni comprendono attributi html e

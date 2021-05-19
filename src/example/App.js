@@ -48,6 +48,7 @@ function App() {
 		builder: false,
 	});
 
+	const [customFormTitle, setCustomFormTitle] = useState('');
 	const [customFormData, setCustomFormData] = useState(null);
 
 	const customFormKey = useRef();
@@ -65,18 +66,16 @@ function App() {
 		console.log(fields);
 	}, []);
 
-	const receiveCustomFormData = useCallback(
-		data => setCustomFormData(data),
-		[]
-	);
+	const receiveCustomFormData = useCallback((title, data) => {
+		setCustomFormTitle(title);
+		setCustomFormData(data);
+	}, []);
 
 	// Il form richiede come prop un array di oggetti - myForm - contenente
 	//  le caratteristiche degli elementi da inserire del form.
 
 	return (
 		<>
-			<h1>MY CUSTOM FORM</h1>
-
 			<div className='tabs-container'>
 				<button onClick={() => dispatch({ type: 'builderVisible' })}>
 					{(visible.builder ? 'HIDE' : 'SHOW') + ' FORM BUILDER'}
@@ -92,12 +91,18 @@ function App() {
 			</div>
 
 			{visible.default && (
-				<Form key={FORM_KEY} formData={myForm} onSubmit={handleSubmit} />
+				<Form
+					key={FORM_KEY}
+					title='DEMO FORM'
+					formData={myForm}
+					onSubmit={handleSubmit}
+				/>
 			)}
 			{visible.builder && <FormBuilder onSubmit={receiveCustomFormData} />}
 			{visible.custom && (
 				<Form
 					key={customFormKey.current}
+					title={customFormTitle}
 					formData={customFormData}
 					onSubmit={handleSubmit}
 				/>

@@ -6,6 +6,23 @@
 	display: flex;
 	flex-direction: column;
 
+	& > h1 {
+		margin-bottom: 30px;
+	}
+
+	.title-container {
+		margin-bottom: 20px;
+		padding-bottom: 10px;
+		display: block;
+		border: 2px solid lightgray;
+
+		padding: 10px 20px;
+
+		& > section {
+			margin-top: 0;
+		}
+	}
+
 	.fb-container {
 		margin-bottom: 20px;
 		padding-bottom: 10px;

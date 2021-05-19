@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import './form-builder.style.scss';
 
 import FieldBuilder from '../field-builder/field-builder.component';
+import Input from '../../form-custom/input/input.component';
 import FormButton from '../../components/form-button/form-button.component';
 import AddButton from '../../components/add-button/add-button.component';
 import RemoveButton from '../../components/remove-button/remove-button.component';
@@ -12,6 +13,7 @@ class FormBuilder extends React.PureComponent {
 	constructor() {
 		super();
 		this.state = {
+			title: '',
 			fieldsData: [{}],
 		};
 		this.usedNames = [];
@@ -53,10 +55,10 @@ class FormBuilder extends React.PureComponent {
 		if (this.state.fieldsData.length === 0) return;
 
 		// Deep copy
-		const stateCopy = JSON.parse(JSON.stringify(this.state.fieldsData));
+		const fieldsDataCopy = JSON.parse(JSON.stringify(this.state.fieldsData));
 
 		// Faccio lo spreading di additionalAttribs in ogni campo
-		this.spreadAdditionalAttribs(stateCopy);
+		this.spreadAdditionalAttribs(fieldsDataCopy);
 
 		// Aggiungo submit e reset button
 		const submitBtn = {
@@ -71,13 +73,13 @@ class FormBuilder extends React.PureComponent {
 			id: 'reset-btn',
 			value: 'RESET',
 		};
-		stateCopy.push(submitBtn, resetBtn);
+		fieldsDataCopy.push(submitBtn, resetBtn);
 
 		// Invio i campi al componente padre
-		this.props.onSubmit(stateCopy);
+		this.props.onSubmit(this.state.title, fieldsDataCopy);
 
 		// Resetto il form
-		this.setState({ fieldsData: [{}] });
+		this.setState({ title: '', fieldsData: [{}] });
 	};
 
 	recomputeUsedNames = () => {
@@ -106,6 +108,23 @@ class FormBuilder extends React.PureComponent {
 
 		return (
 			<form onSubmit={this.handleSubmit} className='form-builder'>
+				<h1>FORM BUILDER</h1>
+
+				<fieldset className='title-container'>
+					<Input
+						type='text'
+						name='formTitle'
+						id='formTitle'
+						fieldValue={this.state.title}
+						onChange={e => this.setState({ title: e.target.value })}
+						label='Form Title'
+						errMsg='Only numbers and letters'
+						required={true}
+						pattern='[a-zA-Z0-9 ]{0,}'
+						placeholder='Insert the title of the form you are building'
+					/>
+				</fieldset>
+
 				{this.state.fieldsData.map((fieldData, indx) => (
 					<fieldset key={indx} className='fb-container'>
 						<header className='builder-header'>

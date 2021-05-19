@@ -1,15 +1,25 @@
 .tabs-container {
 	margin: 15px auto;
 	padding: 10px;
-	width: fit-content;
-	border: 2px solid black;
+	width: 80%;
+	min-height: 70px;
+	border-bottom: 2px solid black;
 
 	display: flex;
 	align-items: center;
-	gap: 15px;
+	justify-content: center;
+	gap: 20px;
 
 	& > button {
 		padding: 10px;
 		min-width: 150px;
+		background-color: white;
+		border: 1px solid gray;
+		transition: border 0.1s;
+
+		&:focus,
+		&:hover {
+			border: 3px solid black;
+		}
 	}
 }
