@@ -4,6 +4,16 @@
 
 	gap: 10px 20px;
 
+	@media (max-width: 500px) {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+
+		& > input {
+			margin: -10px 0 0 20px;
+		}
+	}
+
 	input:hover {
 		transform: scale(1.3);
 	}

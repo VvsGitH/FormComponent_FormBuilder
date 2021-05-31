@@ -5,6 +5,10 @@
 	flex-direction: column;
 	gap: 20px;
 
+	@media (max-width: 550px) {
+		max-width: 100%;
+	}
+
 	input,
 	select {
 		border: none;
@@ -47,6 +51,41 @@
 		}
 		& > button {
 			grid-area: rm-btn;
+		}
+
+		@media (max-width: 550px) {
+			grid-template-columns: 1% 35% 45% 5%;
+			grid-template-areas:
+				'num num . .'
+				'. th-name th-value  rm-btn'
+				'. i-select i-text rm-btn';
+			gap: 10px 4%;
+
+			& > label:first-child {
+				justify-self: left;
+			}
+		}
+
+		@media (max-width: 450px) {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+
+			& > label:nth-child(2) {
+				order: 1;
+			}
+			& > label:nth-child(3) {
+				order: 3;
+			}
+			& > select {
+				order: 2;
+			}
+			& > input[type='text'] {
+				order: 4;
+			}
+			& > button {
+				order: 5;
+			}
 		}
 	}
 }

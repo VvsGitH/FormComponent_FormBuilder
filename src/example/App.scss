@@ -1,3 +1,11 @@
+body {
+	margin: 50px;
+
+	@media (max-width: 570px) {
+		margin: 10px 5px;
+	}
+}
+
 .tabs-container {
 	margin: 15px auto;
 	padding: 10px;
