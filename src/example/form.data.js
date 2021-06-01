@@ -1,4 +1,4 @@
-const myForm = [
+const FORM_DATA = [
 	// FULL NAME
 	{
 		type: 'text',
@@ -136,7 +136,7 @@ const myForm = [
 		info: 'Inserisci tutte le informazioni aggiuntive che sono state richieste nel bando.',
 	},
 
-	// CHECKBOX -> PRIVACY
+	// PRIVACY -> CHECKBOXES
 	{
 		type: 'checkboxes',
 		name: 'privacy',
@@ -172,7 +172,6 @@ const myForm = [
 		type: 'reset',
 		name: 'reset-button',
 		id: 'reset-1',
-		// Il campo value descrive la scritta sul pulsante
 		value: 'RESET',
 	},
 	{
@@ -184,4 +183,4 @@ const myForm = [
 	},
 ];
 
-export default myForm;
+export default FORM_DATA;

@@ -16,5 +16,10 @@
 		outline: none;
 		color: black;
 		border: 2px solid black;
+
+		&:disabled {
+			border: none;
+			color: gray;
+		}
 	}
 }

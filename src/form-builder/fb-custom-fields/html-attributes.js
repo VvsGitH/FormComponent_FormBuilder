@@ -1,3 +1,5 @@
+// Lista degli attributi html supportati per i vari tipi di campi input
+
 export const supportedHtmlAttributes = [
 	'accept',
 	'autoComplete',
